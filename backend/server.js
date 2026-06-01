@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const db = require('./config/db');
 const authRoutes = require('./routes/auth');
+const courseRoutes = require('./routes/course');
 require('dotenv').config();
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(session({
   saveUninitialized: false
 }));
 app.use('/', authRoutes);
+app.use('/', courseRoutes);
 
 db.connect((err)=>{
 
