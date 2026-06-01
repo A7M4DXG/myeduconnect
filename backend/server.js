@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const db = require('./config/db');
 const authRoutes = require('./routes/auth');
 require('dotenv').config();
@@ -8,6 +9,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(session({
+  secret: 'myeduconnectsecret',
+  resave: false,
+  saveUninitialized: false
+}));
 app.use('/', authRoutes);
 
 db.connect((err)=>{
