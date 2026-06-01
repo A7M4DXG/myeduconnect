@@ -21,6 +21,7 @@ app.use(session({
   }
 }));
 app.use('/uploads', express.static('uploads'));
+app.use(express.static('../frontend'));
 app.use('/', authRoutes);
 app.use('/', courseRoutes);
 app.use('/', uploadRoutes);

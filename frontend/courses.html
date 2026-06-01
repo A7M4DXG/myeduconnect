@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload | MyEduConnect</title>
+  <title>Courses | MyEduConnect</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -11,23 +11,16 @@
     <div class="brand">MyEduConnect</div>
     <div class="nav-links">
       <a href="dashboard.html">Dashboard</a>
-      <a href="courses.html">Courses</a>
+      <a href="upload.html">Upload</a>
       <a href="payment.html">Payment</a>
       <button id="logoutButton" type="button">Logout</button>
     </div>
   </nav>
 
   <main class="page">
-    <section class="card">
-      <h1>Upload Assignment</h1>
-      <form id="uploadForm" action="http://localhost:3000/upload" method="POST" enctype="multipart/form-data">
-        <label>
-          Assignment
-          <input type="file" name="assignment" required>
-        </label>
-        <button type="submit">Upload</button>
-      </form>
-      <p class="message" id="message"></p>
+    <section class="card wide-card">
+      <h1>Courses</h1>
+      <div id="courseList" class="course-list"></div>
     </section>
   </main>
   <script src="js/auth.js"></script>
