@@ -3,6 +3,7 @@ const session = require('express-session');
 const db = require('./config/db');
 const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/course');
+const uploadRoutes = require('./routes/upload');
 require('dotenv').config();
 
 const app = express();
@@ -13,10 +14,16 @@ app.use(express.json());
 app.use(session({
   secret: 'myeduconnectsecret',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: false
+  }
 }));
+app.use('/uploads', express.static('uploads'));
 app.use('/', authRoutes);
 app.use('/', courseRoutes);
+app.use('/', uploadRoutes);
 
 db.connect((err)=>{
 
