@@ -42,12 +42,29 @@ async function register(event) {
     body: JSON.stringify({ username, email, password })
   });
 
-  if (response.ok) {
-    setMessage('Registration successful. You can now log in.');
-    return;
-  }
+const data = await response.json();
 
-  setMessage('Registration failed.');
+if(response.ok){
+
+setMessage(
+
+data.message ||
+
+'Registration successful.'
+
+);
+
+return;
+
+}
+
+setMessage(
+
+data.message ||
+
+'Registration failed.'
+
+);
 }
 
 async function logout() {

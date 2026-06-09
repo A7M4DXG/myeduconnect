@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Environment - MyEduConnect</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/course.css">
+</head>
+<body>
+    <nav class="lms-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="dashboard.html" class="nav-brand">MyEduConnect</a>
+                <div class="nav-links">
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="courses.html">All Courses</a>
+                </div>
+            </div>
+            
+            <div class="nav-right">
+                <a href="cart.html" class="icon-btn" aria-label="Cart" style="position: relative; margin-right: 8px;">
+                    <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                    <span class="cart-badge" id="cartCount">0</span>
+                </a>
+
+                <div class="profile-dropdown-container">
+                    <button class="icon-btn notification-btn" id="notificationBtn" aria-label="Notifications">
+                        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1-1.5-1s-1.5.17-1.5 1v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                        <span class="notification-dot" id="notifBadge" style="display: none;"></span>
+                    </button>
+                    <div class="dropdown-menu notifications-menu" id="notificationMenu">
+                        <div class="dropdown-header">Notifications</div>
+                        <div id="notificationList">
+                            <div class="dropdown-item text-muted" style="cursor: default;">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-dropdown-container">
+                    <button class="avatar-btn" id="profileDropdownBtn">
+                        <span id="avatarText">?</span>
+                    </button>
+                    <div class="dropdown-menu" id="profileMenu">
+                        <div class="dropdown-header">
+                            <span id="dropdownUsername">Loading...</span>
+                        </div>
+                        <a href="profile.html" class="dropdown-item">Profile</a>
+                        <a href="settings.html" class="dropdown-item">Settings</a>
+                        <hr>
+                        <button id="logoutBtn" class="dropdown-item text-danger">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="course-banner-container">
+        <div class="course-banner-inner">
+            <div class="banner-content">
+                <span class="banner-badge" id="bannerCategory">Loading...</span>
+                <h1 id="bannerTitle">Loading Course Information...</h1>
+                <div class="banner-meta">
+                    <span class="meta-item code" id="bannerCode"></span>
+                    <span class="meta-item lecturer" id="bannerLecturer"></span>
+                    <span class="meta-item status" id="bannerStatus">Verifying Enrollment...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="course-workspace">
+        
+        <aside class="course-sidebar" id="courseSidebar">
+            <button class="sidebar-toggle" id="sidebarToggleBtn" aria-label="Toggle Menu">
+                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                <span class="toggle-text">Menu</span>
+            </button>
+            
+            <ul class="sidebar-menu">
+                <li class="sidebar-menu-item active" data-target="section-overview">
+                    <span class="menu-icon">🏠</span>
+                    <span class="menu-text">Overview</span>
+                </li>
+                <li class="sidebar-menu-item" data-target="section-materials">
+                    <span class="menu-icon">📁</span>
+                    <span class="menu-text">Materials</span>
+                </li>
+                <li class="sidebar-menu-item" data-target="section-assignments">
+                    <span class="menu-icon">📝</span>
+                    <span class="menu-text">Assignments</span>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="course-main">
+            
+            <section id="section-overview" class="course-section active">
+                <div class="section-header-block">
+                    <h2>Course Overview</h2>
+                </div>
+                <div class="content-card">
+                    <p class="course-description" id="contentDescription">Loading description...</p>
+                </div>
+                
+                <div class="grid-2-col">
+                    <div class="content-card">
+                        <h3>Announcements</h3>
+                        <div id="contentAnnouncements" class="empty-state-block">
+                            No announcements published.
+                        </div>
+                    </div>
+                    <div class="content-card">
+                        <h3>Recent Activity</h3>
+                        <div id="contentRecentActivity" class="empty-state-block">
+                            No recent activity in this course.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="section-materials" class="course-section">
+                <div class="section-header-block">
+                    <h2>Course Materials</h2>
+                    <button class="btn-primary lecturer-only" style="display: none;">+ Upload Material</button>
+                </div>
+                <div class="content-card" id="contentMaterials">
+                    <div class="empty-state-block">No materials uploaded by lecturer yet.</div>
+                </div>
+            </section>
+
+            <section id="section-assignments" class="course-section">
+                <div class="section-header-block">
+                    <h2>Assignments</h2>
+                    <button class="btn-primary lecturer-only" style="display: none;">+ Create Assignment</button>
+                </div>
+                <div class="assignments-grid" id="contentAssignments">
+                    <div class="content-card full-width">
+                        <div class="empty-state-block" style="text-align: center;">No assignments available.</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="js/course.js"></script>
+</body>
+</html>

@@ -5,13 +5,15 @@ const db = require('../config/db');
 
 const router = express.Router();
 
-function requireLogin(req, res, next) {
-  if (!req.session.userId) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
+const {
 
-  next();
-}
+requireLogin
+
+}=require(
+
+'../middleware/authMiddleware'
+
+);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

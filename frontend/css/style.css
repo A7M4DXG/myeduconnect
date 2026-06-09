@@ -158,3 +158,181 @@ button:hover,
     align-items: flex-start;
   }
 }
+
+/* ========================================================= */
+/* MODERN AUTHENTICATION PAGES (Login / Register)            */
+/* ========================================================= */
+
+:root {
+    --auth-primary: #0056D2;
+    --auth-primary-hover: #00419e;
+    --auth-bg: #f0f4f8;
+    --auth-card-bg: #ffffff;
+    --auth-text-main: #202124;
+    --auth-text-muted: #5f6368;
+    --auth-border: #dadce0;
+    --auth-input-bg: #f8f9fa;
+    --auth-radius: 12px;
+}
+
+.auth-body {
+    background-color: var(--auth-bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    position: relative;
+}
+
+/* The new geometric university background accent */
+.auth-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 45vh;
+    background: linear-gradient(135deg, #003a8c 0%, var(--auth-primary) 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 75%, 0% 100%);
+    z-index: 0;
+}
+
+.auth-page {
+    width: 100%;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 1; /* Ensures card sits above the background accent */
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--auth-card-bg);
+    border-radius: var(--auth-radius);
+    /* Enhanced shadow to separate it from the two-tone background */
+    box-shadow: 0 15px 35px rgba(0, 40, 100, 0.12), 0 5px 15px rgba(0,0,0,0.05);
+    padding: 48px 40px;
+    border: none; 
+}
+
+.auth-brand {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--auth-primary);
+    text-align: center;
+    margin-bottom: 32px;
+    letter-spacing: -0.5px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--auth-text-main);
+    margin: 0 0 8px 0;
+    letter-spacing: -0.5px;
+}
+
+.auth-header p {
+    font-size: 1rem;
+    color: var(--auth-text-muted);
+    margin: 0;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--auth-text-main);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--auth-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--auth-text-main);
+    background-color: var(--auth-input-bg);
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.form-group input::placeholder {
+    color: #9aa0a6;
+}
+
+.form-group input:focus {
+    border-color: var(--auth-primary);
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(0, 86, 210, 0.1);
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--auth-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    margin-top: 8px;
+}
+
+.auth-btn:hover {
+    background-color: var(--auth-primary-hover);
+}
+
+.auth-btn:active {
+    transform: translateY(1px);
+}
+
+.auth-footer {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--auth-text-muted);
+    padding-top: 24px;
+    border-top: 1px solid var(--auth-border);
+}
+
+.auth-footer a {
+    color: var(--auth-primary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.auth-footer a:hover {
+    color: var(--auth-primary-hover);
+    text-decoration: underline;
+}
+
+#message {
+    margin-top: 16px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #d93025; 
+}

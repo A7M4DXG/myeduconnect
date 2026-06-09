@@ -6,25 +6,38 @@
   <title>Login | MyEduConnect</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <main class="page">
-    <section class="card">
-      <h1>Login</h1>
-      <form id="loginForm">
-        <label>
-          Email
-          <input type="email" id="email" required>
-        </label>
-        <label>
-          Password
-          <input type="password" id="password" required>
-        </label>
-        <button type="submit">Login</button>
+<body class="auth-body">
+  <main class="auth-page">
+    <section class="auth-card">
+      <div class="auth-brand">MyEduConnect</div>
+      
+      <div class="auth-header">
+        <h1>Welcome Back</h1>
+        <p>Log in to access your learning portal.</p>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label for="email">University Email</label>
+          <input type="email" id="email" placeholder="student@university.edu" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+        
+        <button type="submit" class="auth-btn">Sign In</button>
       </form>
+
       <p class="message" id="message"></p>
-      <p>Need an account? <a href="register.html">Register</a></p>
+
+      <div class="auth-footer">
+        <p>Need an account? <a href="register.html">Register here</a></p>
+      </div>
     </section>
   </main>
+  
   <script src="js/auth.js"></script>
 </body>
 </html>

@@ -4,30 +4,148 @@ const db = require('../config/db');
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
+router.post('/register', async (req,res)=>{
 
-  if (!username || !email || !password) {
-    return res.status(400).json({ message: 'All fields are required' });
-  }
+const {username,email,password}=req.body;
 
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+if(
 
-    db.query(
-      'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-      [username, email, hashedPassword],
-      (err) => {
-        if (err) {
-          return res.status(500).json({ message: 'Registration failed' });
-        }
+!username ||
 
-        res.status(201).json({ message: 'Registration successful' });
-      }
-    );
-  } catch (err) {
-    res.status(500).json({ message: 'Registration failed' });
-  }
+!email ||
+
+!password
+
+){
+
+return res.status(400).json({
+
+message:
+
+'All fields are required'
+
+});
+
+}
+
+try{
+
+const hashedPassword=
+
+await bcrypt.hash(
+
+password,
+
+10
+
+);
+
+db.query(
+
+`
+
+INSERT INTO users
+
+(
+
+username,
+
+email,
+
+password,
+
+role
+
+)
+
+VALUES
+
+(
+
+?,
+
+?,
+
+?,
+
+?
+
+)
+
+`,
+
+[
+
+username,
+
+email,
+
+hashedPassword,
+
+'student'
+
+],
+
+(err)=>{
+
+if(err){
+
+/* duplicate username/email */
+
+if(
+
+err.code===
+
+'ER_DUP_ENTRY'
+
+){
+
+return res.status(409).json({
+
+message:
+
+'Username or email already exists'
+
+});
+
+}
+
+return res.status(500).json({
+
+message:
+
+'Registration failed'
+
+});
+
+}
+
+res.status(201).json({
+
+message:
+
+'Registration successful'
+
+});
+
+}
+
+);
+
+}
+
+catch{
+
+res.status(500).json({
+
+message:
+
+'Registration failed'
+
+});
+
+}
+
 });
 
 router.post('/login', (req, res) => {

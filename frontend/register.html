@@ -6,29 +6,43 @@
   <title>Register | MyEduConnect</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <main class="page">
-    <section class="card">
-      <h1>Register</h1>
-      <form id="registerForm">
-        <label>
-          Username
-          <input type="text" id="username" required>
-        </label>
-        <label>
-          Email
-          <input type="email" id="email" required>
-        </label>
-        <label>
-          Password
-          <input type="password" id="password" required>
-        </label>
-        <button type="submit">Register</button>
+<body class="auth-body">
+  <main class="auth-page">
+    <section class="auth-card">
+      <div class="auth-brand">MyEduConnect</div>
+      
+      <div class="auth-header">
+        <h1>Create Account</h1>
+        <p>Join the university learning platform.</p>
+      </div>
+
+      <form id="registerForm" class="auth-form">
+        <div class="form-group">
+          <label for="username">Full Name</label>
+          <input type="text" id="username" placeholder="John Doe" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">University Email</label>
+          <input type="email" id="email" placeholder="student@university.edu" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+        
+        <button type="submit" class="auth-btn">Create Account</button>
       </form>
+
       <p class="message" id="message"></p>
-      <p>Already registered? <a href="login.html">Login</a></p>
+
+      <div class="auth-footer">
+        <p>Already registered? <a href="login.html">Sign In</a></p>
+      </div>
     </section>
   </main>
+  
   <script src="js/auth.js"></script>
 </body>
 </html>

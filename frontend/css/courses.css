@@ -1,0 +1,121 @@
+@import url('dashboard.css');
+
+.catalog-main { max-width: var(--container-max); margin: 0 auto; padding: 48px 5%; }
+.catalog-header { margin-bottom: 40px; }
+.catalog-title h1 { font-size: 2.5rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; letter-spacing: -0.5px; }
+.catalog-title p { font-size: 1.15rem; color: var(--text-muted); }
+
+.controls-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; margin-bottom: 32px; background: var(--surface); padding: 20px 24px; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.controls-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.search-box { position: relative; display: flex; align-items: center; flex: 1; min-width: 320px; }
+.search-box svg { position: absolute; left: 16px; width: 20px; height: 20px; fill: var(--text-muted); }
+.search-box input { width: 100%; padding: 14px 16px 14px 48px; border: 1px solid var(--border); border-radius: var(--radius-md); background-color: var(--background); font-size: 1rem; outline: none; transition: border-color 0.2s; }
+.search-box input:focus { border-color: var(--primary); background-color: var(--surface); }
+.control-select { padding: 14px 20px; border: 1px solid var(--border); border-radius: var(--radius-md); background-color: var(--surface); font-size: 1rem; color: var(--text-main); outline: none; cursor: pointer; min-width: 200px; }
+
+.view-toggles { display: flex; background-color: var(--background); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.view-btn { background: none; border: none; padding: 12px 16px; cursor: pointer; color: var(--text-muted); }
+.view-btn svg { width: 24px; height: 24px; fill: currentColor; display: block; }
+.view-btn.active { background-color: var(--surface); color: var(--primary); box-shadow: 0 0 4px rgba(0,0,0,0.1); }
+
+.empty-state { padding: 64px 40px; text-align: center; color: var(--text-muted); background-color: var(--surface); border-radius: var(--radius-lg); border: 1px dashed var(--border); font-size: 1.1rem; }
+
+/* --- VISUAL IMPROVEMENTS: CARD STYLING --- */
+.courses-grid.card-mode { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 32px; }
+
+.catalog-card { 
+    background-color: var(--surface); 
+    border-radius: var(--radius-lg); 
+    border: 1px solid var(--border); 
+    overflow: hidden; 
+    display: flex; 
+    flex-direction: column; 
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease; 
+    box-shadow: var(--shadow-sm);
+}
+
+.catalog-card:hover { 
+    transform: translateY(-6px); 
+    box-shadow: var(--shadow-lg); 
+    border-color: transparent;
+}
+
+/* Base Banner Style */
+.card-top { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 20px 24px; 
+    background-color: #f1f3f4; 
+    border-bottom: 1px solid rgba(0,0,0,0.05); 
+}
+
+/* Category Specific Banners (Injected via JS) */
+.cat-cybersecurity .card-top { background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 100%); color: white; }
+.cat-blockchain .card-top { background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%); color: white; }
+.cat-programming .card-top { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; }
+.cat-math .card-top { background: linear-gradient(135deg, #064e3b 0%, #059669 100%); color: white; }
+.cat-languages .card-top { background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%); color: white; }
+.cat-sports .card-top { background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%); color: white; }
+.cat-default .card-top { background: linear-gradient(135deg, #334155 0%, #64748b 100%); color: white; }
+
+/* Refined Badges to work on dark gradients */
+.badge-code { 
+    background: rgba(0, 0, 0, 0.4); 
+    color: white; 
+    padding: 6px 12px; 
+    border-radius: 6px; 
+    font-size: 0.85rem; 
+    font-weight: 700; 
+    letter-spacing: 0.5px; 
+    backdrop-filter: blur(4px);
+}
+
+.badge-category { 
+    color: currentColor; 
+    font-size: 0.85rem; 
+    font-weight: 800; 
+    text-transform: uppercase; 
+    background: rgba(255, 255, 255, 0.2); 
+    padding: 6px 12px; 
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+}
+
+.card-body { padding: 28px 24px 16px; flex: 1; }
+.catalog-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main); line-height: 1.3; }
+.catalog-desc { font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-meta { padding: 0 24px 24px; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; color: var(--text-muted); font-weight: 600; }
+.price { font-weight: 800; color: var(--text-main); font-size: 1.15rem; }
+.card-footer { padding: 20px 24px; background-color: var(--background); border-top: 1px solid var(--border); }
+
+.btn-primary-outline { display: block; width: 100%; padding: 12px; text-align: center; border: 2px solid var(--primary); background-color: transparent; color: var(--primary); font-weight: 700; border-radius: var(--radius-md); transition: all 0.2s; }
+.btn-primary-outline:hover { background-color: var(--primary); color: white; transform: translateY(-1px); }
+
+/* --- VISUAL IMPROVEMENTS: LIST STYLING --- */
+.courses-grid.list-mode { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+.list-header-row { display: flex; align-items: center; background: #f8f9fa; padding: 16px 24px; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.catalog-list-row { display: flex; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border); transition: background-color 0.2s; }
+
+/* List mode left-borders for categories */
+.cat-cybersecurity.catalog-list-row { border-left: 4px solid #dc2626; }
+.cat-blockchain.catalog-list-row { border-left: 4px solid #7c3aed; }
+.cat-programming.catalog-list-row { border-left: 4px solid #2563eb; }
+.cat-math.catalog-list-row { border-left: 4px solid #059669; }
+.cat-languages.catalog-list-row { border-left: 4px solid #ea580c; }
+.cat-sports.catalog-list-row { border-left: 4px solid #f59e0b; }
+.cat-default.catalog-list-row { border-left: 4px solid #64748b; }
+
+.catalog-list-row:last-child { border-bottom: none; }
+.catalog-list-row:hover { background-color: #f8f9fa; }
+.col-code { width: 140px; flex-shrink: 0; }
+.col-code .badge-code { background: var(--text-main); color: white; } /* Reset badge for list view */
+.col-name { flex: 1; font-size: 1.15rem; color: var(--text-main); padding-right: 20px; }
+.col-category { width: 160px; color: var(--text-muted); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; }
+.col-dur { width: 120px; font-weight: 500; }
+.col-price { width: 120px; }
+.col-action { width: 160px; text-align: right; }
+.col-action .btn-primary-outline { padding: 10px 16px; font-size: 0.95rem; background: var(--surface); }
+
+@media (max-width: 1024px) { .controls-toolbar { flex-direction: column; align-items: stretch; } .controls-right { justify-content: space-between; width: 100%; } .search-box { width: 100%; } }
+@media (max-width: 768px) { .courses-grid.list-mode .list-header-row { display: none; } .courses-grid.list-mode .catalog-list-row { flex-direction: column; align-items: flex-start; gap: 12px; border-left-width: 6px; } .col-code, .col-name, .col-category, .col-dur, .col-price, .col-action { width: 100%; text-align: left; padding: 0; } .col-action { margin-top: 12px; } }

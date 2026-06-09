@@ -4,6 +4,11 @@ const db = require('./config/db');
 const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/course');
 const uploadRoutes = require('./routes/upload');
+const cartRoutes = require('./routes/cart');
+const notificationRoutes = require('./routes/notification');
+const adminRoutes=require('./routes/admin');
+const materialRoutes=require('./routes/materials');
+const assignmentRoutes=require('./routes/assignments');
 require('dotenv').config();
 
 const app = express();
@@ -25,6 +30,11 @@ app.use(express.static('../frontend'));
 app.use('/', authRoutes);
 app.use('/', courseRoutes);
 app.use('/', uploadRoutes);
+app.use('/', notificationRoutes);
+app.use('/', cartRoutes);
+app.use('/',adminRoutes);
+app.use('/',materialRoutes);
+app.use('/',assignmentRoutes);
 
 db.connect((err)=>{
 

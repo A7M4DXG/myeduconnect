@@ -1,29 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment | MyEduConnect</title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout - MyEduConnect</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/shop.css">
 </head>
 <body>
-  <nav class="navbar">
-    <div class="brand">MyEduConnect</div>
-    <div class="nav-links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="courses.html">Courses</a>
-      <a href="upload.html">Upload</a>
-      <button id="logoutButton" type="button">Logout</button>
-    </div>
-  </nav>
+    <nav class="lms-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="dashboard.html" class="nav-brand">MyEduConnect</a>
+                <div class="nav-links">
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="courses.html">All Courses</a>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="cart.html" style="font-weight: 500;">Return to Cart</a>
+            </div>
+        </div>
+    </nav>
 
-  <main class="page">
-    <section class="card">
-      <h1>Payment</h1>
-      <p>Payment mock page.</p>
-      <button type="button">Pay Now</button>
-    </section>
-  </main>
-  <script src="js/auth.js"></script>
+    <main class="portal-main">
+        <div class="details-layout" style="max-width: 1000px; margin: 0 auto;">
+            
+            <div class="payment-card details-content">
+                <h2>Choose Payment Method</h2>
+                <p class="text-muted" style="margin-bottom: 24px;">Please select your preferred payment option to finalize your enrollment.</p>
+                
+                <div class="payment-methods-grid" id="paymentMethodsGrid">
+                    
+                    <div class="payment-method-card" data-method="FPX Online Banking">
+                        <div class="method-icon">
+                            <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M12 3L1 9h22L12 3zm-6.5 8.5v6H8v-6H5.5zm6 0v6H14v-6h-2.5zm6 0v6H20v-6h-2.5zM2 20h20v2H2v-2z"/></svg>
+                        </div>
+                        <div class="method-name">FPX Online Banking</div>
+                    </div>
+                    
+                    <div class="payment-method-card" data-method="Touch 'n Go eWallet">
+                        <div class="method-icon">
+                            <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M21 7.28V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-2.28c.59-.35 1-.98 1-1.72V9c0-.74-.41-1.37-1-1.72zM20 9v6h-2.5V9H20zM5 19V5h14v2h-3c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h3v2H5z"/></svg>
+                        </div>
+                        <div class="method-name">Touch 'n Go eWallet</div>
+                    </div>
+                    
+                    <div class="payment-method-card" data-method="DuitNow QR">
+                        <div class="method-icon">
+                            <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm13-2h-2v2h2v-2zm-2 2h-2v2h2v-2zm2 2h-2v2h2v-2zm-2 2h-2v2h2v-2z"/></svg>
+                        </div>
+                        <div class="method-name">DuitNow QR</div>
+                    </div>
+                    
+                    <div class="payment-method-card" data-method="Online Banking Transfer">
+                        <div class="method-icon">
+                            <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z"/></svg>
+                        </div>
+                        <div class="method-name">Online Banking Transfer</div>
+                    </div>
+                    
+                    <div class="payment-method-card" data-method="Debit / Credit Card">
+                        <div class="method-icon">
+                            <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                        </div>
+                        <div class="method-name">Debit / Credit Card</div>
+                    </div>
+                </div>
+
+                <div id="selectedMethodDisplay" class="selected-method-display" style="display: none; margin-bottom: 24px;">
+                    Payment Method: <strong>None</strong>
+                </div>
+
+                <button id="payBtn" class="btn-primary full-width" style="padding: 16px; font-size: 1.1rem;">Confirm Payment</button>
+                <div id="paymentMsg" style="margin-top: 16px; font-weight: bold; text-align: center;"></div>
+            </div>
+
+            <div class="details-sidebar">
+                <div class="summary-card">
+                    <h3>Enrollment Summary</h3>
+                    <div class="summary-row" style="margin-top: 16px;">
+                        <span>Total Courses:</span> <strong id="checkoutCount">0</strong>
+                    </div>
+                    <ul id="checkoutList" class="checkout-list" style="list-style: none; padding: 0; margin: 16px 0;"></ul>
+                    <hr style="margin: 16px 0; border: none; border-top: 1px solid var(--border);">
+                    <div class="summary-row summary-total">
+                        <span>Total Pay:</span> <strong id="checkoutTotal">RM 0</strong>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <script src="js/payment.js"></script>
 </body>
 </html>

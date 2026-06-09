@@ -1,29 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Courses | MyEduConnect</title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Catalog - MyEduConnect</title>
+    <link rel="stylesheet" href="css/courses.css">
 </head>
 <body>
-  <nav class="navbar">
-    <div class="brand">MyEduConnect</div>
-    <div class="nav-links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="upload.html">Upload</a>
-      <a href="payment.html">Payment</a>
-      <button id="logoutButton" type="button">Logout</button>
-    </div>
-  </nav>
+    <nav class="lms-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="dashboard.html" class="nav-brand">MyEduConnect</a>
+                <div class="nav-links">
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="courses.html" class="active">All Courses</a>
+                </div>
+            </div>
+            
+            <div class="nav-right">
+                <a href="cart.html" class="icon-btn" aria-label="Cart" style="position: relative; margin-right: 8px;">
+                    <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                    <span class="cart-badge" id="cartCount">0</span>
+                </a>
 
-  <main class="page">
-    <section class="card wide-card">
-      <h1>Courses</h1>
-      <div id="courseList" class="course-list"></div>
-    </section>
-  </main>
-  <script src="js/auth.js"></script>
-  <script src="js/dashboard.js"></script>
+                <div class="profile-dropdown-container">
+                    <button class="avatar-btn" id="profileDropdownBtn">
+                        <span id="avatarText">?</span>
+                    </button>
+                    <div class="dropdown-menu" id="profileMenu">
+                        <div class="dropdown-header">
+                            <span id="dropdownUsername">Loading...</span>
+                        </div>
+                        <a href="profile.html" class="dropdown-item">Profile</a>
+                        <hr>
+                        <button id="logoutBtn" class="dropdown-item text-danger">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="catalog-main">
+        <header class="catalog-header">
+            <div class="catalog-title">
+                <h1>Course Catalog</h1>
+                <p>Browse all available university courses and modules.</p>
+            </div>
+        </header>
+
+        <section class="catalog-section">
+            <div class="controls-toolbar">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" id="catalogSearchInput" placeholder="Search by name, code, or category...">
+                </div>
+                
+                <div class="controls-right">
+                    <select class="control-select" id="catalogSortSelect" aria-label="Sort">
+                        <option value="name">Sort by Name</option>
+                        <option value="code">Sort by Course Code</option>
+                        <option value="category">Sort by Category</option>
+                    </select>
+                    
+                    <div class="view-toggles">
+                        <button class="view-btn active" id="viewCardBtn" aria-label="Card View">
+                            <svg viewBox="0 0 24 24"><path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/></svg>
+                        </button>
+                        <button class="view-btn" id="viewListBtn" aria-label="List View">
+                            <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="catalogContainer" class="courses-grid card-mode"></div>
+        </section>
+    </main>
+    
+    <script src="js/courses.js"></script>
 </body>
 </html>

@@ -1,28 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | MyEduConnect</title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyEduConnect - Student Portal</title>
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
-  <nav class="navbar">
-    <div class="brand">MyEduConnect</div>
-    <div class="nav-links">
-      <a href="courses.html">Courses</a>
-      <a href="upload.html">Upload</a>
-      <a href="payment.html">Payment</a>
-      <button id="logoutButton" type="button">Logout</button>
-    </div>
-  </nav>
+    <nav class="lms-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="dashboard.html" class="nav-brand">MyEduConnect</a>
+                <div class="nav-links">
+                    <a href="dashboard.html" class="active">Dashboard</a>
+                    <a href="courses.html">All Courses</a>
+                </div>
+            </div>
+            
+            <div class="nav-right">
+                <a href="cart.html" class="icon-btn" aria-label="Cart" style="position: relative; margin-right: 8px;">
+                    <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                    <span class="cart-badge" id="cartCount">0</span>
+                </a>
 
-  <main class="page">
-    <section class="card wide-card">
-      <h1>Dashboard</h1>
-      <p>Welcome to MyEduConnect.</p>
-    </section>
-  </main>
-  <script src="js/auth.js"></script>
+                <button class="icon-btn" id="navSearchBtn" aria-label="Search">
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                </button>
+
+                <div class="profile-dropdown-container">
+                    <button class="icon-btn notification-btn" id="notificationBtn" aria-label="Notifications">
+                        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1-1.5-1s-1.5.17-1.5 1v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                        <span class="notification-dot" id="notifBadge" style="display: none;"></span>
+                    </button>
+                    <div class="dropdown-menu notifications-menu" id="notificationMenu">
+                        <div class="dropdown-header">Notifications</div>
+                        <div id="notificationList">
+                            <div class="dropdown-item text-muted" style="cursor: default;">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-dropdown-container">
+                    <button class="avatar-btn" id="profileDropdownBtn">
+                        <span id="avatarText">?</span>
+                    </button>
+                    <div class="dropdown-menu" id="profileMenu">
+                        <div class="dropdown-header">
+                            <span id="dropdownUsername">Loading...</span>
+                        </div>
+                        <a href="profile.html" class="dropdown-item">Profile</a>
+                        <a href="settings.html" class="dropdown-item">Settings</a>
+                        <hr>
+                        <button id="logoutBtn" class="dropdown-item text-danger">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="portal-main">
+        <header class="welcome-header">
+            <div class="welcome-text">
+                <h1 id="welcomeMessage">Loading...</h1>
+                <p>Welcome to your learning portal.</p>
+            </div>
+            <div class="header-search">
+                <input type="text" id="shortcutSearchInput" placeholder="Find a new course to enroll in...">
+                <button id="shortcutSearchBtn">Browse Catalog</button>
+            </div>
+        </header>
+
+        <section class="portal-section" id="continueLearningSection" style="display: none;">
+            <div class="section-header">
+                <h2>Continue Learning</h2>
+            </div>
+            <div class="continue-learning-card" id="continueLearningCard"></div>
+        </section>
+
+        <section class="portal-section">
+            <div class="section-header course-controls">
+                <h2>Recently Enrolled Courses</h2>
+                <div class="controls-toolbar">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <input type="text" id="courseSearchInput" placeholder="Filter enrolled courses...">
+                    </div>
+                    <div class="view-toggles">
+                        <button class="view-btn active" id="viewCardBtn" aria-label="Card View">
+                            <svg viewBox="0 0 24 24"><path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/></svg>
+                        </button>
+                        <button class="view-btn" id="viewListBtn" aria-label="List View">
+                            <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="coursesContainer" class="courses-grid card-mode"></div>
+        </section>
+
+        <section
+
+class="portal-section"
+
+id="adminPanelSection"
+
+style="display:none;"
+
+>
+
+<div class="section-header">
+
+<h2>
+
+Admin Control Panel
+
+</h2>
+
+</div>
+
+<div class="content-card">
+
+<div
+
+style="display:flex;gap:16px;flex-wrap:wrap;"
+
+>
+
+<button
+
+class="btn-open"
+
+id="openCreateCourseBtn"
+
+>
+
+Create Course
+
+</button>
+
+<button
+
+class="btn-open"
+
+id="viewUsersBtn"
+
+>
+
+View Users
+
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+        <section class="portal-section">
+            <div class="section-header">
+                <h2>Recent Activity</h2>
+            </div>
+            <div class="activity-list" id="activityContainer"></div>
+        </section>
+    </main>
+    
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
