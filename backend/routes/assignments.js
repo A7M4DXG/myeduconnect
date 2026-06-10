@@ -438,4 +438,78 @@ res.json(result);
 
 );
 
+
+/* ====================
+   GRADE SUBMISSION
+   Lecturer only
+==================== */
+
+router.put(
+
+'/submissions/:id/grade',
+
+requireLecturer,
+
+(req,res)=>{
+
+const {
+
+grade,
+
+feedback
+
+}=req.body;
+
+db.query(
+
+`
+
+UPDATE submissions
+
+SET grade=?,feedback=?
+
+WHERE id=?
+
+`,
+
+[
+
+grade,
+
+feedback,
+
+req.params.id
+
+],
+
+(err)=>{
+
+if(err){
+
+return res.status(500).json({
+
+message:
+
+'Failed'
+
+});
+
+}
+
+res.json({
+
+message:
+
+'Graded'
+
+});
+
+}
+
+);
+
+}
+
+);
+
 module.exports=router;

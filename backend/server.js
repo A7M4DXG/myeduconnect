@@ -9,6 +9,7 @@ const notificationRoutes = require('./routes/notification');
 const adminRoutes=require('./routes/admin');
 const materialRoutes=require('./routes/materials');
 const assignmentRoutes=require('./routes/assignments');
+const lecturerRoutes=require('./routes/lecturer');
 require('dotenv').config();
 
 const app = express();
@@ -35,6 +36,7 @@ app.use('/', cartRoutes);
 app.use('/',adminRoutes);
 app.use('/',materialRoutes);
 app.use('/',assignmentRoutes);
+app.use('/',lecturerRoutes);
 
 db.connect((err)=>{
 
