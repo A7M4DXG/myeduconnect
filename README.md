@@ -2,7 +2,7 @@
 
 A University Learning Management System (LMS) developed for the Ethical Hacking & Penetration Testing Assignment.
 
-The platform simulates a real university portal where students can browse courses, enroll through a mock payment system, access learning materials, submit assignments, and receive notifications. Lecturers and administrators have dedicated management capabilities through role-based access control.
+MyEduConnect simulates a modern university learning platform where students can browse courses, enroll through a mock payment system, access course materials, submit assignments, receive grades and notifications, while lecturers and administrators manage academic content through dedicated dashboards.
 
 ---
 
@@ -10,36 +10,44 @@ The platform simulates a real university portal where students can browse course
 
 ## Student Features
 
-- User Registration & Login
-- Secure Session Authentication
-- Browse Available Courses
-- Course Details Page
-- Shopping Cart System
-- Mock Payment Gateway
-- Course Enrollment
-- View Enrolled Courses
-- Access Course Materials
-- Submit Assignments
-- Dashboard Activity Feed
-- Notification System
+* User Registration & Login
+* Secure Session Authentication
+* Browse Available Courses
+* Course Details Page
+* Shopping Cart System
+* Mock Payment Gateway
+* Course Enrollment
+* View Enrolled Courses
+* Student Dashboard
+* Access Course Materials
+* Submit Assignments
+* View Assignment Status
+* Receive Notifications
+* Activity Tracking
 
 ---
 
 ## Lecturer Features
 
-- Upload Course Materials
-- Create Assignments
-- View Student Submissions
-- Manage Course Content
+* Lecturer Dashboard
+* View Assigned Courses
+* Upload Course Materials
+* Create Assignments
+* View Student Submissions
+* Grade Assignments
+* Provide Feedback
+* Manage Course Content
 
 ---
 
 ## Administrator Features
 
-- Manage Courses
-- Manage Users
-- Assign Lecturers
-- Access Administrative Controls
+* Admin Dashboard
+* Manage Users
+* Manage Courses
+* Assign Lecturers To Courses
+* View Platform Statistics
+* Manage Academic Content
 
 ---
 
@@ -47,26 +55,32 @@ The platform simulates a real university portal where students can browse course
 
 ## Frontend
 
-- HTML5
-- CSS3
-- JavaScript (Vanilla)
+* HTML5
+* CSS3
+* JavaScript (Vanilla JS)
 
 ## Backend
 
-- Node.js
-- Express.js
+* Node.js
+* Express.js
 
 ## Database
 
-- MySQL
+* MySQL
 
 ## Authentication
 
-- Express Session
+* Express Session
 
 ## File Uploads
 
-- Multer
+* Multer
+
+## Security
+
+* Bcrypt Password Hashing
+* Session-Based Authentication
+* Role-Based Access Control (RBAC)
 
 ---
 
@@ -85,12 +99,19 @@ myeduconnect/
 ├── frontend/
 │   ├── css/
 │   ├── js/
-│   ├── dashboard.html
+│   │
+│   ├── login.html
+│   ├── register.html
+│   ├── student-dashboard.html
+│   ├── lecturer-dashboard.html
+│   ├── admin-dashboard.html
 │   ├── courses.html
 │   ├── course.html
+│   ├── course-details.html
 │   ├── cart.html
 │   ├── payment.html
-│   └── assignment.html
+│   ├── assignment.html
+│   └── upload.html
 │
 ├── database/
 │   └── schema.sql
@@ -107,7 +128,6 @@ The system currently uses the following tables:
 ```text
 users
 courses
-lecturers
 enrollments
 cart
 payments
@@ -116,6 +136,18 @@ course_materials
 assignments
 submissions
 uploads
+```
+
+## Note
+
+The project no longer uses a separate `lecturers` table.
+
+Lecturers are stored directly in the `users` table and differentiated using the `role` field:
+
+```text
+student
+lecturer
+admin
 ```
 
 ---
@@ -162,7 +194,7 @@ PORT=3000
 
 ## 4. Create Database
 
-Open MySQL Workbench and run:
+Open MySQL Workbench and execute:
 
 ```sql
 CREATE DATABASE IF NOT EXISTS myeduconnect;
@@ -173,13 +205,11 @@ USE myeduconnect;
 
 ## 5. Import Schema
 
-Open:
+Import and execute:
 
 ```text
 database/schema.sql
 ```
-
-Execute the complete script.
 
 Verify:
 
@@ -192,7 +222,6 @@ Expected tables:
 ```text
 users
 courses
-lecturers
 enrollments
 cart
 payments
@@ -205,7 +234,7 @@ uploads
 
 ---
 
-## 6. Start Server
+## 6. Start The Application
 
 ```bash
 cd backend
@@ -231,35 +260,75 @@ http://localhost:3000
 
 ## Student
 
-- Browse Courses
-- Add Courses To Cart
-- Make Mock Payments
-- Enroll In Courses
-- Access Materials
-- Submit Assignments
+* Browse Courses
+* Add Courses To Cart
+* Complete Mock Payments
+* Enroll In Courses
+* Access Learning Materials
+* Submit Assignments
+* View Assignment Status
+* Receive Notifications
 
 ## Lecturer
 
-- Upload Course Materials
-- Create Assignments
-- View Student Submissions
+* View Assigned Courses
+* Upload Learning Materials
+* Create Assignments
+* Manage Course Content
+* View Student Submissions
+* Grade Assignments
+* Provide Feedback
 
-## Admin
+## Administrator
 
-- Manage Courses
-- Manage Users
-- Administrative Controls
+* Manage Users
+* Manage Courses
+* Assign Lecturers
+* Access Platform Statistics
+* Monitor Academic Activity
+
+---
+
+# Authentication Flow
+
+The system uses role-based redirection after login.
+
+### Student
+
+```text
+student-dashboard.html
+```
+
+### Lecturer
+
+```text
+lecturer-dashboard.html
+```
+
+### Administrator
+
+```text
+admin-dashboard.html
+```
+
+Authentication is managed using:
+
+* Express Session
+* Bcrypt Password Hashing
+* Protected Backend Routes
 
 ---
 
 # Security Features
 
-- Session-Based Authentication
-- Password Hashing
-- Role-Based Access Control
-- Protected Routes
-- Enrollment Duplication Prevention
-- Cart Duplication Prevention
+* Session-Based Authentication
+* Password Hashing (bcrypt)
+* Role-Based Access Control
+* Protected Routes
+* Enrollment Duplication Prevention
+* Duplicate Submission Prevention
+* Input Validation
+* Access Restrictions Based On User Role
 
 ---
 
@@ -268,44 +337,101 @@ http://localhost:3000
 Before starting work:
 
 ```bash
-git pull
+git pull origin main
 ```
 
-After changes:
+After completing work:
 
 ```bash
 git add .
 git commit -m "describe changes"
-git push
+git push origin main
 ```
 
 ---
 
 # Team Rules
 
-- Pull before coding
-- Push frequently
-- Never commit `.env`
-- Never commit `node_modules`
-- Never commit uploaded files
-- Test before pushing
+* Pull Before Coding
+* Push Frequently
+* Never Commit `.env`
+* Never Commit `node_modules`
+* Never Commit Uploaded Files
+* Test Before Pushing
+* Use Feature Branches For Major Changes
+
+---
+
+# Recovery Tag
+
+Current stable project checkpoint:
+
+```text
+stable-ui-merge
+```
+
+Restore:
+
+```bash
+git checkout stable-ui-merge
+```
+
+Create a recovery branch:
+
+```bash
+git checkout -b recovery stable-ui-merge
+```
 
 ---
 
 # Current Project Status
 
-- [x] Authentication System
-- [x] Registration & Login
-- [x] Role Management
-- [x] Course Enrollment
+## Core System
+
+* [x] Authentication System
+* [x] Registration & Login
+* [x] Session Management
+* [x] Role-Based Access Control
+* [x] Database Rebuild
+* [x] Database Relationships
+
+## Student Features
+
+- [x] Student Dashboard
+- [x] Browse Courses
+- [x] Course Details
 - [x] Shopping Cart
 - [x] Mock Payment System
+- [x] Course Enrollment
 - [x] Notifications
-- [x] Course Materials
-- [x] Assignment System
-- [x] Database Design
-- [ ] Admin Dashboard UI
-- [ ] Lecturer Dashboard UI
-- [ ] Deliberate Vulnerabilities
+- [x] Course Materials Access
+- [x] Course Materials Download
+- [x] Assignment Submission
+- [x] Assignment Status Tracking
+- [x] Grade & Feedback Viewing
+
+## Lecturer Features
+
+- [x] Lecturer Dashboard
+- [x] Upload Materials
+- [x] Manage Materials
+- [x] Create Assignments
+- [x] View Submissions
+- [x] Grade Assignments
+- [x] Provide Feedback
+
+## Administrator Features
+
+- [x] Admin Dashboard
+- [x] User Management
+- [x] Course Management
+- [x] Lecturer Assignment
+
+## Remaining Work
+
+- [ ] Notification System Enhancements
+- [ ] Deliberate Security Vulnerabilities
 - [ ] Docker Deployment
 - [ ] Architecture Diagram
+- [ ] Final Security Testing
+- [ ] Final Documentation
