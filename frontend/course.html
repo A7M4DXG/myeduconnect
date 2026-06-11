@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Environment - MyEduConnect</title>
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/student-dashboard.css">
     <link rel="stylesheet" href="css/course.css">
 </head>
 <body>
     <nav class="lms-navbar">
         <div class="nav-container">
             <div class="nav-left">
-                <a href="dashboard.html" class="nav-brand">MyEduConnect</a>
+                <a href="student-dashboard.html" class="nav-brand">MyEduConnect</a>
                 <div class="nav-links">
-                    <a href="dashboard.html">Dashboard</a>
+                    <a href="student-dashboard.html">Dashboard</a>
                     <a href="courses.html">All Courses</a>
                 </div>
             </div>
@@ -122,10 +122,10 @@
             <section id="section-materials" class="course-section">
                 <div class="section-header-block">
                     <h2>Course Materials</h2>
-                    <button class="btn-primary lecturer-only" style="display: none;">+ Upload Material</button>
+                    <button class="btn-primary lecturer-only" style="display: none;" id="btnUploadMaterial">+ Upload Material</button>
                 </div>
-                <div class="content-card" id="contentMaterials">
-                    <div class="empty-state-block">No materials uploaded by lecturer yet.</div>
+                <div id="contentMaterials" class="materials-wrapper">
+                    <div class="empty-state-block">Loading materials...</div>
                 </div>
             </section>
 

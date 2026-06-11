@@ -146,12 +146,13 @@ function renderCatalog(coursesArray) {
     });
 }
 
+// Inside courses.js - Update this function
 function updateCartBadge() {
-    fetch('/cart/count', { credentials: 'include' })
-        .then(res => res.ok ? res.json() : { count: 0 })
+    fetch('/cart', { method: 'GET', credentials: 'include' })
+        .then(res => res.ok ? res.json() : [])
         .then(data => {
             const badge = document.getElementById('cartCount');
-            if (badge) badge.textContent = data.count || 0;
+            if (badge) badge.textContent = Array.isArray(data) ? data.length : 0;
         });
 }
 

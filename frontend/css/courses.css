@@ -1,4 +1,4 @@
-@import url('dashboard.css');
+@import url('student-dashboard.css');
 
 .catalog-main { max-width: var(--container-max); margin: 0 auto; padding: 48px 5%; }
 .catalog-header { margin-bottom: 40px; }

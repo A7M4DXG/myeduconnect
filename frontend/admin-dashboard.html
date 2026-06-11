@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyEduConnect - Admin Dashboard</title>
+    <link rel="stylesheet" href="css/admin-dashboard.css">
+</head>
+<body>
+    <nav class="lms-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="student-dashboard.html" class="nav-brand">MyEduConnect</a>
+                <span class="nav-role-badge">Admin</span>
+            </div>
+            <div class="nav-right">
+                <a href="student-dashboard.html" class="nav-link-btn">Student Portal</a>
+                <div class="profile-dropdown-container">
+                    <button class="avatar-btn" id="profileDropdownBtn">
+                        <span id="avatarText">A</span>
+                    </button>
+                    <div class="dropdown-menu" id="profileMenu">
+                        <div class="dropdown-header"><span id="dropdownUsername">Admin</span></div>
+                        <hr>
+                        <button id="logoutBtn" class="dropdown-item text-danger">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-title">Control Panel</div>
+            <nav class="sidebar-nav">
+                <button class="sidebar-item active" data-section="stats">
+                    <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                    Overview
+                </button>
+                <button class="sidebar-item" data-section="users">
+                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    User Management
+                </button>
+                <button class="sidebar-item" data-section="courses">
+                    <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 14H8v-2h8v2zm0-4H8v-2h8v2zm-3-4H8V6h5v2z"/></svg>
+                    Course Management
+                </button>
+                <button class="sidebar-item" data-section="payments">
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                    Payment Management
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+
+            <!-- ── OVERVIEW ── -->
+            <section class="admin-section active" id="section-stats">
+                <div class="section-title">
+                    <h1>Platform Overview</h1>
+                    <p>Real-time statistics for MyEduConnect</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statUsers">—</span>
+                            <span class="stat-label">Total Users</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 14H8v-2h8v2zm0-4H8v-2h8v2zm-3-4H8V6h5v2z"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statCourses">—</span>
+                            <span class="stat-label">Total Courses</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red">
+                            <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statRevenue">—</span>
+                            <span class="stat-label">Revenue (MYR)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon yellow">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statEnrollments">—</span>
+                            <span class="stat-label">Enrollments</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overview-grid">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3>Recent Users</h3>
+                            <button class="btn-link" onclick="switchSection('users')">View All →</button>
+                        </div>
+                        <table class="data-table">
+                            <thead><tr><th>Username</th><th>Email</th><th>Role</th></tr></thead>
+                            <tbody id="recentUsersBody"><tr><td colspan="3" class="loading-row">Loading…</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3>Recent Payments</h3>
+                            <button class="btn-link" onclick="switchSection('payments')">View All →</button>
+                        </div>
+                        <table class="data-table">
+                            <thead><tr><th>User</th><th>Amount</th><th>Status</th></tr></thead>
+                            <tbody id="recentPaymentsBody"><tr><td colspan="3" class="loading-row">Loading…</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── USER MANAGEMENT ── -->
+            <section class="admin-section" id="section-users">
+                <div class="section-title">
+                    <h1>User Management</h1>
+                    <p>Manage accounts, roles, and access</p>
+                </div>
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>All Users <span class="count-badge" id="userCount">0</span></h3>
+                        <input type="text" class="table-search" id="userSearch" placeholder="Search by name or email…">
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr><td colspan="6" class="loading-row">Loading users…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── COURSE MANAGEMENT ── -->
+            <section class="admin-section" id="section-courses">
+                <div class="section-title">
+                    <h1>Course Management</h1>
+                    <p>Create, edit, and remove courses</p>
+                </div>
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>All Courses <span class="count-badge" id="courseCount">0</span></h3>
+                        <button class="btn-primary" id="openCreateCourseModal">+ New Course</button>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table" id="coursesTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price (MYR)</th>
+                                    <th>Lecturer</th>
+                                    <th>Students</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="coursesTableBody">
+                                <tr><td colspan="8" class="loading-row">Loading courses…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── PAYMENT MANAGEMENT ── -->
+            <section class="admin-section" id="section-payments">
+                <div class="section-title">
+                    <h1>Payment Management</h1>
+                    <p>Track transactions and revenue</p>
+                </div>
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>All Transactions <span class="count-badge" id="paymentCount">0</span></h3>
+                        <span class="revenue-total">Total: MYR <strong id="totalRevenueLabel">0.00</strong></span>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table" id="paymentsTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th>Amount (MYR)</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsTableBody">
+                                <tr><td colspan="7" class="loading-row">Loading payments…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Create Course Modal -->
+    <div class="modal-overlay" id="createCourseModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Create New Course</h2>
+                <button class="modal-close" id="closeCreateCourseModal">&times;</button>
+            </div>
+            <form id="createCourseForm">
+                <div class="form-group">
+                    <label>Course Code *</label>
+                    <input type="text" id="fieldCourseCode" placeholder="e.g. CS101" required>
+                </div>
+                <div class="form-group">
+                    <label>Course Name *</label>
+                    <input type="text" id="fieldCourseName" placeholder="e.g. Introduction to Python" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="fieldCourseCategory">
+                        <option value="Programming">Programming</option>
+                        <option value="Cybersecurity">Cybersecurity</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Blockchain">Blockchain</option>
+                        <option value="Languages">Languages</option>
+                        <option value="Sports">Sports</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price (MYR)</label>
+                        <input type="number" id="fieldPrice" value="0" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Duration (weeks)</label>
+                        <input type="number" id="fieldDuration" value="14" min="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Lecturer ID</label>
+                    <input type="number" id="fieldLecturerId" placeholder="Leave blank if none">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="fieldDescription" rows="3" placeholder="Short course description…"></textarea>
+                </div>
+                <p class="form-msg" id="courseFormMsg"></p>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelCreateCourse">Cancel</button>
+                    <button type="submit" class="btn-primary">Create Course</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/admin-dashboard.js"></script>
+</body>
+</html>

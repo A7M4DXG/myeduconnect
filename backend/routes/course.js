@@ -4,32 +4,12 @@ const db = require('../config/db');
 const router = express.Router();
 
 const {
+  requireLogin,
+  requireAdmin
+} = require('../middleware/authMiddleware');
 
-requireLogin,
-
-requireAdmin
-
-}=require(
-
-'../middleware/authMiddleware'
-
-);
-
-function requireLogin(req, res, next) {
-  if (!req.session.userId) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
-  next();
-}
-
-router.post(
-
-'/courses',
-
-requireAdmin,
-
-(req,res)=>{  const { title, description } = req.body;
+router.post('/courses', requireAdmin, (req, res) => {
+  const { title, description } = req.body;
 
   if (!title || !description) {
     return res.status(400).json({ message: 'Title and description are required' });
@@ -49,15 +29,16 @@ requireAdmin,
 });
 
 router.get('/courses', (req, res) => {
-  // Using LEFT JOIN so courses without a lecturer still load correctly
+  // PHASE 6 FIX: Using LEFT JOIN to users table instead of lecturers
   const query = `
-    SELECT courses.*, lecturers.name AS lecturer_name 
+    SELECT courses.*, users.username AS lecturer_name 
     FROM courses 
-    LEFT JOIN lecturers ON courses.lecturer_id = lecturers.id
+    LEFT JOIN users ON courses.lecturer_id = users.id
   `;
   
   db.query(query, (err, results) => {
     if (err) {
+      console.error('Error fetching courses:', err);
       return res.status(500).json({ message: 'Failed to fetch courses' });
     }
 
@@ -66,81 +47,54 @@ router.get('/courses', (req, res) => {
 });
 
 router.post('/enroll', requireLogin, (req, res) => {
-
   const { course_id } = req.body;
 
-  if (!course_id){
-
+  if (!course_id) {
     return res.status(400).json({
-
-      message:'Course ID is required'
-
+      message: 'Course ID is required'
     });
-
   }
 
   db.query(
-
     'INSERT INTO enrollments (user_id, course_id) VALUES (?,?)',
-
     [
-
       req.session.userId,
-
       course_id
-
     ],
-
-    (err)=>{
-
-      if(err){
-
+    (err) => {
+      if (err) {
         /* duplicate enrollment */
-
-        if(err.code==='ER_DUP_ENTRY'){
-
+        if (err.code === 'ER_DUP_ENTRY') {
           return res.status(409).json({
-
-            message:'Already enrolled'
-
+            message: 'Already enrolled'
           });
-
         }
-
-        console.log(err);
-
+        console.error(err);
         return res.status(500).json({
-
-          message:'Enrollment failed'
-
+          message: 'Enrollment failed'
         });
-
       }
 
       res.status(201).json({
-
-        message:'Enrollment successful'
-
+        message: 'Enrollment successful'
       });
-
     }
-
   );
-
 });
 
 router.get('/my-courses', requireLogin, (req, res) => {
-  // Added LEFT JOIN to fetch lecturer name for enrolled courses as well
+  // PHASE 6 FIX: Using LEFT JOIN to users table instead of lecturers
   const query = `
-    SELECT courses.*, lecturers.name AS lecturer_name
+    SELECT courses.*, users.username AS lecturer_name
     FROM courses
     INNER JOIN enrollments ON enrollments.course_id = courses.id
-    LEFT JOIN lecturers ON courses.lecturer_id = lecturers.id
+    LEFT JOIN users ON courses.lecturer_id = users.id
     WHERE enrollments.user_id = ?
   `;
 
   db.query(query, [req.session.userId], (err, results) => {
       if (err) {
+        console.error('Error fetching enrolled courses:', err);
         return res.status(500).json({ message: 'Failed to fetch enrolled courses' });
       }
 

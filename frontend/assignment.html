@@ -1,37 +1,96 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
-
-<title>Assignment</title>
-
-<link rel="stylesheet" href="css/dashboard.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyEduConnect - Submit Assignment</title>
+    <link rel="stylesheet" href="css/assignment.css">
 </head>
-
 <body>
+    <nav class="lms-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="student-dashboard.html" class="nav-brand">MyEduConnect</a>
+                <span class="nav-role-badge">Student</span>
+            </div>
+            <div class="nav-right">
+                <div class="profile-dropdown-container">
+                    <button class="avatar-btn" id="profileDropdownBtn">
+                        <span id="avatarText">S</span>
+                    </button>
+                    <div class="dropdown-menu" id="profileMenu">
+                        <div class="dropdown-header"><span id="dropdownUsername">Student</span></div>
+                        <hr>
+                        <button id="logoutBtn" class="dropdown-item text-danger">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-<div class="container"
+    <main class="page-layout">
+        <div class="content-container">
+            <a href="student-dashboard.html" class="back-link">← Back to Dashboard</a>
+            
+            <div class="section-title">
+                <h1>Assignment Submission</h1>
+                <p>Review instructions and manage your work</p>
+            </div>
 
-style="max-width:900px;margin:50px auto;">
+            <div class="content-card">
+                <div id="assignmentDetails" class="assignment-info">
+                    <div class="loading-state">Loading assignment details...</div>
+                </div>
+            </div>
 
-<h1>
+            <div class="content-card" id="submissionStatusCard" style="display: none;">
+                <div class="card-header">
+                    <h3>Submission Details</h3>
+                </div>
+                <div class="assignment-info">
+                    <div class="detail-row">
+                        <strong>Status:</strong> 
+                        <span id="subStatusBadge" class="status-badge">Submitted</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>File:</strong> 
+                        <a id="subFile" href="#" target="_blank" style="color: var(--primary);">...</a>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Submitted:</strong> 
+                        <span id="subDate">...</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Grade:</strong> 
+                        <span id="subGrade" style="font-weight: 700;">Pending</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Feedback:</strong> 
+                        <span id="subFeedback">Pending</span>
+                    </div>
+                </div>
+            </div>
 
-Assignment Submission
+            <div class="content-card upload-card" id="uploadCard">
+                <div class="card-header">
+                    <h3>Submit Your Work</h3>
+                </div>
+                <form id="submissionForm" class="upload-form">
+                    <div class="form-group">
+                        <label for="assignmentFile">Select File *</label>
+                        <input type="file" id="assignmentFile" class="file-input" required>
+                        <span class="file-help">Ensure your file is named clearly before uploading.</span>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="submitBtn">Submit Assignment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
 
-</h1>
+    <div class="toast" id="toast"></div>
 
-<div id="assignmentBox">
-
-Loading...
-
-</div>
-
-</div>
-
-<script src="js/assignment.js"></script>
-
+    <script src="js/assignment.js"></script>
 </body>
-
 </html>

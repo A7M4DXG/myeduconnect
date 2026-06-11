@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyEduConnect - Lecturer Dashboard</title>
+    <link rel="stylesheet" href="css/lecturer-dashboard.css">
+</head>
+<body>
+    <nav class="lms-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="student-dashboard.html" class="nav-brand">MyEduConnect</a>
+                <span class="nav-role-badge">Lecturer</span>
+            </div>
+            <div class="nav-right">
+                <a href="student-dashboard.html" class="nav-link-btn">Student Portal</a>
+                <div class="profile-dropdown-container">
+                    <button class="avatar-btn" id="profileDropdownBtn">
+                        <span id="avatarText">L</span>
+                    </button>
+                    <div class="dropdown-menu" id="profileMenu">
+                        <div class="dropdown-header"><span id="dropdownUsername">Lecturer</span></div>
+                        <hr>
+                        <button id="logoutBtn" class="dropdown-item text-danger">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lec-layout">
+        <!-- Sidebar -->
+        <aside class="lec-sidebar">
+            <div class="sidebar-title">Lecturer Portal</div>
+            <nav class="sidebar-nav">
+                <button class="sidebar-item active" data-tab="overview">
+                    <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                    Overview
+                </button>
+                <button class="sidebar-item" data-tab="assignments">
+                    <svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                    Assignments
+                </button>
+                <button class="sidebar-item" data-tab="materials">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11 8 15.01z"/></svg>
+                    Materials
+                </button>
+                <button class="sidebar-item" data-tab="students">
+                    <svg viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18V15c0 3.09 5 5 7 5 2 0 7-1.91 7-5v-3.82L21 9l-9-6zM19 9l-7 3.82L5 9l7-3.82L19 9zM12 18c-1.37 0-5-1.16-5-3v-2.73l5 2.73 5-2.73V15c0 1.84-3.63 3-5 3z"/></svg>
+                    Students
+                </button>
+                <button class="sidebar-item" data-tab="submissions">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                    Submissions
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main -->
+        <main class="lec-main">
+
+            <!-- ── OVERVIEW ── -->
+            <section class="lec-section active" id="tab-overview">
+                <div class="section-title">
+                    <h1>My Dashboard</h1>
+                    <p id="welcomeLec">Welcome back!</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 14H8v-2h8v2zm0-4H8v-2h8v2zm-3-4H8V6h5v2z"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statCourses">—</span>
+                            <span class="stat-label">My Courses</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statStudents">—</span>
+                            <span class="stat-label">Total Students</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon yellow">
+                            <svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statAssignments">—</span>
+                            <span class="stat-label">Assignments</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red">
+                            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statSubmissions">—</span>
+                            <span class="stat-label">Submissions</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>My Courses</h3>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Code</th><th>Name</th><th>Category</th><th>Students</th></tr>
+                        </thead>
+                        <tbody id="overviewCoursesBody">
+                            <tr><td colspan="4" class="loading-row">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ── ASSIGNMENTS ── -->
+            <section class="lec-section" id="tab-assignments">
+                <div class="section-title">
+                    <h1>Manage Assignments</h1>
+                    <p>Create and manage assignments per course</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>New Assignment</h3>
+                    </div>
+                    <form id="createAssignmentForm" class="inline-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Course *</label>
+                                <select id="assignCourseSelect" required>
+                                    <option value="">— select course —</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Title *</label>
+                                <input type="text" id="assignTitle" placeholder="e.g. Week 3 Lab Report" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="assignDesc" rows="2" placeholder="Instructions…"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Due Date *</label>
+                                <input type="datetime-local" id="assignDue" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Max Marks</label>
+                                <input type="number" id="assignMax" value="100" min="1">
+                            </div>
+                        </div>
+                        <p class="form-msg" id="assignFormMsg"></p>
+                        <div style="display:flex;justify-content:flex-end">
+                            <button type="submit" class="btn-primary">+ Create Assignment</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>Assignments by Course</h3>
+                        <select id="assignFilterCourse" class="course-select">
+                            <option value="">All Courses</option>
+                        </select>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Title</th><th>Course</th><th>Due Date</th><th>Max Marks</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody id="assignmentsTableBody">
+                                <tr><td colspan="5" class="loading-row">Loading…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── MATERIALS ── -->
+            <section class="lec-section" id="tab-materials">
+                <div class="section-title">
+                    <h1>Manage Materials</h1>
+                    <p>Upload and organise course materials</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>Upload Material</h3>
+                    </div>
+                    <form id="uploadMaterialForm" class="inline-form" enctype="multipart/form-data">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Course *</label>
+                                <select id="matCourseSelect" required>
+                                    <option value="">— select course —</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Title *</label>
+                                <input type="text" id="matTitle" placeholder="e.g. Week 1 Slides" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Type</label>
+                                <select id="matType">
+                                    <option value="slides">Slides</option>
+                                    <option value="notes">Notes</option>
+                                    <option value="video">Video</option>
+                                    <option value="lab">Lab</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>File *</label>
+                                <input type="file" id="matFile" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input type="text" id="matDesc" placeholder="Optional description">
+                        </div>
+                        <p class="form-msg" id="matFormMsg"></p>
+                        <div style="display:flex;justify-content:flex-end">
+                            <button type="submit" class="btn-primary">Upload Material</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>Course Materials</h3>
+                        <select id="matFilterCourse" class="course-select">
+                            <option value="">— select course —</option>
+                        </select>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Title</th><th>Type</th><th>Description</th><th>Uploaded</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody id="materialsTableBody">
+                                <tr><td colspan="5" class="loading-row">Select a course above to view materials.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── STUDENTS ── -->
+            <section class="lec-section" id="tab-students">
+                <div class="section-title">
+                    <h1>Student List</h1>
+                    <p>View students enrolled in your courses</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>Students</h3>
+                        <select id="studentCourseSelect" class="course-select">
+                            <option value="">— select course —</option>
+                        </select>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>#</th><th>Username</th><th>Email</th><th>Enrolled</th></tr>
+                            </thead>
+                            <tbody id="studentsTableBody">
+                                <tr><td colspan="4" class="loading-row">Select a course above.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── SUBMISSIONS ── -->
+            <section class="lec-section" id="tab-submissions">
+                <div class="section-title">
+                    <h1>Submission Review</h1>
+                    <p>Review and grade student submissions</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>Filter Submissions</h3>
+                    </div>
+                    <div class="filter-row">
+                        <div class="form-group">
+                            <label>Course</label>
+                            <select id="subCourseSelect" class="course-select">
+                                <option value="">— select course —</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Assignment</label>
+                            <select id="subAssignSelect" class="course-select" disabled>
+                                <option value="">— select assignment —</option>
+                            </select>
+                        </div>
+                        <div style="align-self:flex-end">
+                            <button class="btn-primary" id="loadSubsBtn">Load Submissions</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>Submissions <span class="count-badge" id="subsCount">0</span></h3>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>#</th><th>Student</th><th>File</th><th>Submitted</th><th>Status</th><th>Grade</th><th>Feedback</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="submissionsTableBody">
+                                <tr><td colspan="8" class="loading-row">Select a course and assignment above.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <script src="js/lecturer-dashboard.js"></script>
+</body>
+</html>

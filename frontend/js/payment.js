@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(() => {
                 msg.style.color = '#1e8e3e';
                 msg.textContent = `Mock Payment Successful! Enrolling you via ${selectedPaymentMethod}...`;
-                setTimeout(() => { window.location.replace('dashboard.html'); }, 1800);
+                setTimeout(() => { window.location.replace('student-dashboard.html'); }, 1800);
             })
             .catch(() => {
                 msg.style.color = '#d93025';

@@ -137,10 +137,18 @@ function addToCart() {
 }
 
 function updateCartBadge() {
-    fetch('/cart/count', { credentials: 'include' })
-        .then(res => res.ok ? res.json() : { count: 0 })
-        .then(data => {
-            const badge = document.getElementById('cartCount');
-            if (badge) badge.textContent = data.count || 0;
-        });
+    fetch('/cart', { 
+        method: 'GET', 
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.ok ? res.json() : [])
+    .then(cartItems => {
+        const badge = document.getElementById('cartCount');
+        // Ensure cartItems is an array, then get the length
+        if (badge) {
+            badge.textContent = Array.isArray(cartItems) ? cartItems.length : 0;
+        }
+    })
+    .catch(err => console.error("Error fetching cart count:", err));
 }

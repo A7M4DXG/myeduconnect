@@ -1,3 +1,7 @@
+/* ========================================================
+   Student Dashboard — Merged & Assignment Workflow Updated
+======================================================== */
+
 let loadedCourses = [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,8 +17,10 @@ function initPortal() {
     fetchEnrolledCourses();
     fetchRecentActivity();
     updateCartBadge();
+    fetchStudentAssignments(); // NEW: Loads the assignment tracking
 }
 
+/* ── Profile & Core Data ── */
 function fetchUserProfile() {
     fetch('/profile', {
         method: 'GET',
@@ -30,19 +36,6 @@ function fetchUserProfile() {
             document.getElementById('welcomeMessage').textContent = `Welcome back, ${data.username}`;
             document.getElementById('dropdownUsername').textContent = data.username;
             document.getElementById('avatarText').textContent = data.username.charAt(0).toUpperCase();
-            if(
-
-data.role==='admin'
-
-){
-
-document.getElementById(
-
-'adminPanelSection'
-
-).style.display='block';
-
-}
         }
     })
     .catch(() => {
@@ -69,12 +62,13 @@ function fetchEnrolledCourses() {
     });
 }
 
+/* ── Render Course Blocks ── */
 function renderContinueLearning(coursesArray) {
     const section = document.getElementById('continueLearningSection');
     const card = document.getElementById('continueLearningCard');
     
     if (!coursesArray || coursesArray.length === 0) {
-        section.style.display = 'none';
+        if(section) section.style.display = 'none';
         return;
     }
     
@@ -82,20 +76,21 @@ function renderContinueLearning(coursesArray) {
     const title = course.course_name || course.title || 'Course';
     const courseId = course.id || course.course_id;
     
-    section.style.display = 'block';
-    card.innerHTML = `
-        <div class="cl-info">
-            <span class="text-muted" style="font-weight: 600; text-transform: uppercase; font-size: 0.85rem;">Currently Learning</span>
-            <h3>${title}</h3>
-            <p>Pick up right where you left off and complete your upcoming assignments.</p>
-        </div>
-        <div class="cl-action">
-            <a href="course.html?id=${courseId}" class="btn-open" style="padding: 12px 32px; font-size: 1.05rem;">Resume Course</a>
-        </div>
-    `;
+    if(section) section.style.display = 'block';
+    if(card) {
+        card.innerHTML = `
+            <div class="cl-info">
+                <span class="text-muted" style="font-weight: 600; text-transform: uppercase; font-size: 0.85rem;">Currently Learning</span>
+                <h3>${title}</h3>
+                <p>Pick up right where you left off and complete your upcoming assignments.</p>
+            </div>
+            <div class="cl-action">
+                <a href="course.html?id=${courseId}" class="btn-open" style="padding: 12px 32px; font-size: 1.05rem;">Resume Course</a>
+            </div>
+        `;
+    }
 }
 
-// Utility to map database category to visual theme
 function getCategoryThemeClass(category) {
     if (!category) return 'cat-default';
     const cat = category.toLowerCase();
@@ -112,6 +107,8 @@ function getCategoryThemeClass(category) {
 
 function renderCourses(coursesArray) {
     const container = document.getElementById('coursesContainer');
+    if(!container) return;
+
     container.innerHTML = '';
     
     if (coursesArray.length === 0) {
@@ -147,6 +144,86 @@ function renderCourses(coursesArray) {
     });
 }
 
+/* ── NEW: Assignment Workflow Tracking ── */
+async function fetchStudentAssignments() {
+    try {
+        // 1. Fetch courses to know which assignments to look for
+        const coursesRes = await fetch('/my-courses', { credentials: 'include' });
+        if (!coursesRes.ok) return;
+        const courses = await coursesRes.json();
+
+        // 2. Fetch all student submissions
+        const subsRes = await fetch('/my-submissions', { credentials: 'include' });
+        const submissions = subsRes.ok ? await subsRes.json() : [];
+
+        // 3. Fetch assignments for each course
+        let allAssignments = [];
+        for (let course of courses) {
+            const courseId = course.id || course.course_id;
+            const assignRes = await fetch(`/assignments/${courseId}`, { credentials: 'include' });
+            if (assignRes.ok) {
+                const assigns = await assignRes.json();
+                assigns.forEach(a => {
+                    allAssignments.push({
+                        ...a,
+                        course_name: course.course_name || course.title || `Course ${courseId}`
+                    });
+                });
+            }
+        }
+
+        // 4. Map status (Not Submitted, Submitted, Graded)
+        const mappedAssignments = allAssignments.map(a => {
+            const sub = submissions.find(s => s.assignment_id === a.id);
+            let status = 'Not Submitted';
+            let grade = null;
+            
+            if (sub) {
+                status = sub.grade ? 'Graded' : 'Submitted';
+                grade = sub.grade;
+            }
+
+            return { ...a, status, grade };
+        });
+
+        renderAssignmentsTable(mappedAssignments);
+    } catch (error) {
+        console.error("Error fetching assignments:", error);
+    }
+}
+
+function renderAssignmentsTable(assignments) {
+    const container = document.getElementById('assignmentsBody'); // Assuming this exists in your HTML
+    if (!container) return; // Fail gracefully if not on dashboard page
+
+    if (assignments.length === 0) {
+        container.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No assignments due.</td></tr>';
+        return;
+    }
+
+    container.innerHTML = assignments.map(a => {
+        let statusBadge = '';
+        if (a.status === 'Not Submitted') statusBadge = `<span class="badge" style="background:#fce8e6;color:#d93025;">Not Submitted</span>`;
+        if (a.status === 'Submitted') statusBadge = `<span class="badge" style="background:#e8f0fe;color:#0056d2;">Submitted</span>`;
+        if (a.status === 'Graded') statusBadge = `<span class="badge" style="background:#e6f4ea;color:#1e8e3e;">Graded</span>`;
+
+        return `
+            <tr>
+                <td><strong>${a.title}</strong></td>
+                <td class="text-muted">${a.course_name}</td>
+                <td>${statusBadge}</td>
+                <td><strong>${a.grade ? a.grade : '—'}</strong></td>
+                <td>
+                    <a href="assignment.html?courseId=${a.course_id}&assignId=${a.id}" class="btn-open" style="padding: 6px 12px; font-size: 0.85rem;">
+                        ${a.status === 'Not Submitted' ? 'Submit' : 'View'}
+                    </a>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+/* ── Notifications & Cart ── */
 function updateCartBadge() {
     fetch('/cart', {
         method: 'GET',
@@ -161,6 +238,62 @@ function updateCartBadge() {
     .catch(() => console.warn("Failed to fetch cart count"));
 }
 
+function fetchRecentActivity() {
+    const activityContainer = document.getElementById('activityContainer');
+    const notifList = document.getElementById('notificationList');
+    const notifBadge = document.getElementById('notifBadge');
+    
+    Promise.all([
+        fetch('/my-submissions', { credentials: 'include' }).then(r => r.ok ? r.json() : []), // UPDATED
+        fetch('/my-courses', { credentials: 'include' }).then(r => r.ok ? r.json() : [])
+    ])
+    .then(([submissions, courses]) => {
+        if(activityContainer) activityContainer.innerHTML = '';
+        if(notifList) notifList.innerHTML = '';
+        
+        const safeSubmissions = Array.isArray(submissions) ? submissions : [];
+        const safeCourses = Array.isArray(courses) ? courses : [];
+        let hasActivity = false;
+
+        safeSubmissions.forEach(sub => {
+            hasActivity = true;
+            const filename = sub.file_name || 'Assignment File';
+            if(activityContainer) activityContainer.appendChild(createActivityItem('upload', `Submitted assignment: <strong>${filename}</strong>`));
+            if(notifList) notifList.innerHTML += `<div class="dropdown-item nav-notif-item"><div class="activity-icon upload"></div><span>Uploaded: ${filename}</span></div>`;
+        });
+
+        safeCourses.forEach(course => {
+            hasActivity = true;
+            const title = course.course_name || course.title || 'Course';
+            if(activityContainer) activityContainer.appendChild(createActivityItem('enroll', `Enrolled in: <strong>${title}</strong>`));
+            if(notifList) notifList.innerHTML += `<div class="dropdown-item nav-notif-item"><div class="activity-icon enroll"></div><span>Enrolled: ${title}</span></div>`;
+        });
+
+        if (!hasActivity) {
+            if(activityContainer) activityContainer.innerHTML = '<div class="empty-state">No data available</div>';
+            if(notifList) notifList.innerHTML = '<div class="dropdown-item text-muted" style="cursor:default;">No notifications</div>';
+            if(notifBadge) notifBadge.style.display = 'none';
+        } else {
+            if(notifBadge) notifBadge.style.display = 'block';
+        }
+    })
+    .catch(() => {
+        if(activityContainer) activityContainer.innerHTML = '<div class="empty-state">No data available</div>';
+        if(notifList) notifList.innerHTML = '<div class="dropdown-item text-muted" style="cursor:default;">No data available</div>';
+    });
+}
+
+function createActivityItem(type, htmlText) {
+    const div = document.createElement('div');
+    div.className = 'activity-item';
+    div.innerHTML = `
+        <div class="activity-icon ${type}"></div>
+        <div class="activity-text">${htmlText}</div>
+    `;
+    return div;
+}
+
+/* ── UI Interaction Setup ── */
 function setupShortcutSearch() {
     const shortcutInput = document.getElementById('shortcutSearchInput');
     const shortcutBtn = document.getElementById('shortcutSearchBtn');
@@ -209,59 +342,26 @@ function setupSearch() {
     }
 }
 
-function fetchRecentActivity() {
-    const activityContainer = document.getElementById('activityContainer');
-    const notifList = document.getElementById('notificationList');
-    const notifBadge = document.getElementById('notifBadge');
-    
-    Promise.all([
-        fetch('/my-uploads', { credentials: 'include' }).then(r => r.ok ? r.json() : []),
-        fetch('/my-courses', { credentials: 'include' }).then(r => r.ok ? r.json() : [])
-    ])
-    .then(([uploads, courses]) => {
-        activityContainer.innerHTML = '';
-        notifList.innerHTML = '';
-        
-        const safeUploads = Array.isArray(uploads) ? uploads : [];
-        const safeCourses = Array.isArray(courses) ? courses : [];
-        let hasActivity = false;
+function setupViewToggles() {
+    const container = document.getElementById('coursesContainer');
+    const cardBtn = document.getElementById('viewCardBtn');
+    const listBtn = document.getElementById('viewListBtn');
 
-        safeUploads.forEach(upload => {
-            hasActivity = true;
-            const filename = upload.filename || upload.file_name || upload.name || 'Assignment File';
-            activityContainer.appendChild(createActivityItem('upload', `Submitted assignment: <strong>${filename}</strong>`));
-            notifList.innerHTML += `<div class="dropdown-item nav-notif-item"><div class="activity-icon upload"></div><span>Uploaded: ${filename}</span></div>`;
-        });
+    if (!container || !cardBtn || !listBtn) return;
 
-        safeCourses.forEach(course => {
-            hasActivity = true;
-            const title = course.course_name || course.title || 'Course';
-            activityContainer.appendChild(createActivityItem('enroll', `Enrolled in: <strong>${title}</strong>`));
-            notifList.innerHTML += `<div class="dropdown-item nav-notif-item"><div class="activity-icon enroll"></div><span>Enrolled: ${title}</span></div>`;
-        });
-
-        if (!hasActivity) {
-            activityContainer.innerHTML = '<div class="empty-state">No data available</div>';
-            notifList.innerHTML = '<div class="dropdown-item text-muted" style="cursor:default;">No notifications</div>';
-            notifBadge.style.display = 'none';
-        } else {
-            notifBadge.style.display = 'block';
-        }
-    })
-    .catch(() => {
-        activityContainer.innerHTML = '<div class="empty-state">No data available</div>';
-        notifList.innerHTML = '<div class="dropdown-item text-muted" style="cursor:default;">No data available</div>';
+    cardBtn.addEventListener('click', () => {
+        container.classList.remove('list-mode');
+        container.classList.add('card-mode');
+        cardBtn.classList.add('active');
+        listBtn.classList.remove('active');
     });
-}
 
-function createActivityItem(type, htmlText) {
-    const div = document.createElement('div');
-    div.className = 'activity-item';
-    div.innerHTML = `
-        <div class="activity-icon ${type}"></div>
-        <div class="activity-text">${htmlText}</div>
-    `;
-    return div;
+    listBtn.addEventListener('click', () => {
+        container.classList.remove('card-mode');
+        container.classList.add('list-mode');
+        listBtn.classList.add('active');
+        cardBtn.classList.remove('active');
+    });
 }
 
 function setupDropdowns() {
@@ -302,26 +402,4 @@ function setupDropdowns() {
             window.location.replace('login.html');
         });
     }
-}
-
-function setupViewToggles() {
-    const container = document.getElementById('coursesContainer');
-    const cardBtn = document.getElementById('viewCardBtn');
-    const listBtn = document.getElementById('viewListBtn');
-
-    if (!container || !cardBtn || !listBtn) return;
-
-    cardBtn.addEventListener('click', () => {
-        container.classList.remove('list-mode');
-        container.classList.add('card-mode');
-        cardBtn.classList.add('active');
-        listBtn.classList.remove('active');
-    });
-
-    listBtn.addEventListener('click', () => {
-        container.classList.remove('card-mode');
-        container.classList.add('list-mode');
-        listBtn.classList.add('active');
-        cardBtn.classList.remove('active');
-    });
 }
