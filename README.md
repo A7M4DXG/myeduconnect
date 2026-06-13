@@ -2,7 +2,7 @@
 
 A University Learning Management System (LMS) developed for the Ethical Hacking & Penetration Testing Assignment.
 
-MyEduConnect simulates a modern university learning platform where students can browse courses, enroll through a mock payment system, access course materials, submit assignments, receive grades and notifications, while lecturers and administrators manage academic content through dedicated dashboards.
+MyEduConnect simulates a modern university learning platform where students can browse courses, enroll through a mock payment system, access learning materials, submit assignments, receive grades and notifications, while lecturers and administrators manage academic content through dedicated dashboards.
 
 ---
 
@@ -13,16 +13,22 @@ MyEduConnect simulates a modern university learning platform where students can 
 * User Registration & Login
 * Secure Session Authentication
 * Browse Available Courses
+* Search Courses
 * Course Details Page
 * Shopping Cart System
 * Mock Payment Gateway
 * Course Enrollment
-* View Enrolled Courses
 * Student Dashboard
+* Profile Management
+* Edit Username & Email
+* Change Password
+* View Enrolled Courses
 * Access Course Materials
+* Download Learning Materials
 * Submit Assignments
-* View Assignment Status
-* Receive Notifications
+* View Submission Status
+* View Grades & Feedback
+* Notifications System
 * Activity Tracking
 
 ---
@@ -31,22 +37,35 @@ MyEduConnect simulates a modern university learning platform where students can 
 
 * Lecturer Dashboard
 * View Assigned Courses
-* Upload Course Materials
+* Edit Course Information
+* Edit Course Description
+* Edit Course Category
+* Upload Learning Materials
+* Manage Materials
 * Create Assignments
+* Edit Assignments
+* Delete Assignments
 * View Student Submissions
 * Grade Assignments
 * Provide Feedback
-* Manage Course Content
+* View Enrolled Students
+* Course Statistics
 
 ---
 
 ## Administrator Features
 
 * Admin Dashboard
-* Manage Users
-* Manage Courses
+* User Management
+* Course Management
+* Create Courses
+* Edit Courses
+* Delete Courses
+* Dynamic Category Management
 * Assign Lecturers To Courses
 * View Platform Statistics
+* Monitor Payments
+* View Enrollments
 * Manage Academic Content
 
 ---
@@ -66,21 +85,26 @@ MyEduConnect simulates a modern university learning platform where students can 
 
 ## Database
 
-* MySQL
+* MySQL 8
 
 ## Authentication
 
 * Express Session
-
-## File Uploads
-
-* Multer
 
 ## Security
 
 * Bcrypt Password Hashing
 * Session-Based Authentication
 * Role-Based Access Control (RBAC)
+
+## File Uploads
+
+* Multer
+
+## Containerization
+
+* Docker
+* Docker Compose
 
 ---
 
@@ -94,14 +118,15 @@ myeduconnect/
 │   ├── middleware/
 │   ├── routes/
 │   ├── uploads/
+│   ├── package.json
 │   └── server.js
 │
 ├── frontend/
 │   ├── css/
 │   ├── js/
-│   │
 │   ├── login.html
 │   ├── register.html
+│   ├── profile.html
 │   ├── student-dashboard.html
 │   ├── lecturer-dashboard.html
 │   ├── admin-dashboard.html
@@ -110,11 +135,13 @@ myeduconnect/
 │   ├── course-details.html
 │   ├── cart.html
 │   ├── payment.html
-│   ├── assignment.html
-│   └── upload.html
+│   └── ...
 │
 ├── database/
 │   └── schema.sql
+│
+├── Dockerfile
+├── docker-compose.yml
 │
 └── README.md
 ```
@@ -122,8 +149,6 @@ myeduconnect/
 ---
 
 # Database Tables
-
-The system currently uses the following tables:
 
 ```text
 users
@@ -138,11 +163,9 @@ submissions
 uploads
 ```
 
-## Note
+## User Roles
 
-The project no longer uses a separate `lecturers` table.
-
-Lecturers are stored directly in the `users` table and differentiated using the `role` field:
+Users are stored in a single table and differentiated using the role field:
 
 ```text
 student
@@ -152,146 +175,17 @@ admin
 
 ---
 
-# Installation
+# Authentication & Authorization
 
-## 1. Clone Repository
+The system uses:
 
-```bash
-git clone https://github.com/A7M4DXG/myeduconnect.git
-cd myeduconnect
-```
+* Express Session
+* Session Persistence
+* Password Hashing with bcrypt
+* Protected Routes
+* Role-Based Access Control (RBAC)
 
----
-
-## 2. Install Backend Dependencies
-
-```bash
-cd backend
-npm install
-```
-
----
-
-## 3. Configure Environment Variables
-
-Create:
-
-```text
-backend/.env
-```
-
-Add:
-
-```env
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=YOUR_PASSWORD
-DB_NAME=myeduconnect
-PORT=3000
-```
-
----
-
-## 4. Create Database
-
-Open MySQL Workbench and execute:
-
-```sql
-CREATE DATABASE IF NOT EXISTS myeduconnect;
-USE myeduconnect;
-```
-
----
-
-## 5. Import Schema
-
-Import and execute:
-
-```text
-database/schema.sql
-```
-
-Verify:
-
-```sql
-SHOW TABLES;
-```
-
-Expected tables:
-
-```text
-users
-courses
-enrollments
-cart
-payments
-notifications
-course_materials
-assignments
-submissions
-uploads
-```
-
----
-
-## 6. Start The Application
-
-```bash
-cd backend
-npm run dev
-```
-
-Expected output:
-
-```text
-Database Connected
-Server running on port 3000
-```
-
-Open:
-
-```text
-http://localhost:3000
-```
-
----
-
-# User Roles
-
-## Student
-
-* Browse Courses
-* Add Courses To Cart
-* Complete Mock Payments
-* Enroll In Courses
-* Access Learning Materials
-* Submit Assignments
-* View Assignment Status
-* Receive Notifications
-
-## Lecturer
-
-* View Assigned Courses
-* Upload Learning Materials
-* Create Assignments
-* Manage Course Content
-* View Student Submissions
-* Grade Assignments
-* Provide Feedback
-
-## Administrator
-
-* Manage Users
-* Manage Courses
-* Assign Lecturers
-* Access Platform Statistics
-* Monitor Academic Activity
-
----
-
-# Authentication Flow
-
-The system uses role-based redirection after login.
+After login users are redirected according to their role:
 
 ### Student
 
@@ -311,11 +205,199 @@ lecturer-dashboard.html
 admin-dashboard.html
 ```
 
-Authentication is managed using:
+Role validation prevents unauthorized access to dashboards and protected resources.
 
-* Express Session
-* Bcrypt Password Hashing
-* Protected Backend Routes
+---
+
+# Profile Management
+
+All authenticated users have access to:
+
+* View Profile Information
+* Update Username
+* Update Email Address
+* Change Password
+* View Account Creation Date
+
+### Student Profile Statistics
+
+* Number of Enrolled Courses
+* Enrolled Course Names
+* Number of Assignment Submissions
+
+---
+
+# Course Management
+
+Courses support:
+
+* Course Code
+* Course Name
+* Category
+* Description
+* Duration
+* Price
+* Assigned Lecturer
+
+### Dynamic Categories
+
+Categories are loaded directly from the database.
+
+Examples:
+
+```text
+Computer Science
+Cybersecurity
+Information Systems
+Languages
+Mathematics
+Research
+Software Engineering
+Sports
+University Studies
+```
+
+Administrators can create courses using existing categories stored in the database.
+
+---
+
+# Notifications System
+
+Students receive notifications when:
+
+* Assignments are submitted
+* Materials are uploaded
+* Assignments are graded
+* Course-related activities occur
+
+Notifications are displayed directly in the dashboard notification panel.
+
+---
+
+# Assignment Workflow
+
+### Lecturer
+
+1. Create Assignment
+2. Edit Assignment
+3. Delete Assignment
+4. Review Student Submission
+5. Grade Submission
+6. Provide Feedback
+
+### Student
+
+1. Access Assignment
+2. Upload Submission
+3. Track Submission Status
+4. View Grade
+5. View Feedback
+
+---
+
+# Payment System
+
+The system includes a mock payment gateway for demonstration purposes.
+
+Features:
+
+* Cart Checkout
+* Enrollment Processing
+* Payment Recording
+* Payment History
+* Admin Payment Monitoring
+
+---
+
+# Docker Deployment
+
+## Build & Start Containers
+
+```bash
+docker compose up --build
+```
+
+## Run In Background
+
+```bash
+docker compose up --build -d
+```
+
+## Stop Containers
+
+```bash
+docker compose down
+```
+
+## Remove Containers & Database Volume
+
+```bash
+docker compose down -v
+```
+
+---
+
+# Local Installation
+
+## 1. Clone Repository
+
+```bash
+git clone https://github.com/A7M4DXG/myeduconnect.git
+cd myeduconnect
+```
+
+## 2. Install Dependencies
+
+```bash
+cd backend
+npm install
+```
+
+## 3. Configure Environment Variables
+
+Create:
+
+```text
+backend/.env
+```
+
+Example:
+
+```env
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=YOUR_PASSWORD
+DB_NAME=myeduconnect
+PORT=3000
+SESSION_SECRET=myeduconnect_secret
+```
+
+## 4. Create Database
+
+```sql
+CREATE DATABASE myeduconnect;
+```
+
+## 5. Import Schema
+
+Import:
+
+```text
+database/schema.sql
+```
+
+## 6. Start Application
+
+```bash
+cd backend
+npm start
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
 
 ---
 
@@ -323,63 +405,30 @@ Authentication is managed using:
 
 * Session-Based Authentication
 * Password Hashing (bcrypt)
+* Protected Backend Routes
 * Role-Based Access Control
-* Protected Routes
-* Enrollment Duplication Prevention
+* Duplicate Enrollment Prevention
 * Duplicate Submission Prevention
-* Input Validation
-* Access Restrictions Based On User Role
+* Server-Side Validation
+* Session Validation
+* Dashboard Access Protection
 
 ---
 
 # Git Workflow
 
-Before starting work:
+Pull latest changes:
 
 ```bash
 git pull origin main
 ```
 
-After completing work:
+Commit changes:
 
 ```bash
 git add .
-git commit -m "describe changes"
+git commit -m "Describe changes"
 git push origin main
-```
-
----
-
-# Team Rules
-
-* Pull Before Coding
-* Push Frequently
-* Never Commit `.env`
-* Never Commit `node_modules`
-* Never Commit Uploaded Files
-* Test Before Pushing
-* Use Feature Branches For Major Changes
-
----
-
-# Recovery Tag
-
-Current stable project checkpoint:
-
-```text
-stable-ui-merge
-```
-
-Restore:
-
-```bash
-git checkout stable-ui-merge
-```
-
-Create a recovery branch:
-
-```bash
-git checkout -b recovery stable-ui-merge
 ```
 
 ---
@@ -392,46 +441,56 @@ git checkout -b recovery stable-ui-merge
 * [x] Registration & Login
 * [x] Session Management
 * [x] Role-Based Access Control
-* [x] Database Rebuild
-* [x] Database Relationships
+* [x] User Profiles
+* [x] Password Management
+* [x] Database Integration
 
 ## Student Features
 
-- [x] Student Dashboard
-- [x] Browse Courses
-- [x] Course Details
-- [x] Shopping Cart
-- [x] Mock Payment System
-- [x] Course Enrollment
-- [x] Notifications
-- [x] Course Materials Access
-- [x] Course Materials Download
-- [x] Assignment Submission
-- [x] Assignment Status Tracking
-- [x] Grade & Feedback Viewing
+* [x] Student Dashboard
+* [x] Browse Courses
+* [x] Search Courses
+* [x] Course Enrollment
+* [x] Shopping Cart
+* [x] Mock Payment System
+* [x] Notifications
+* [x] Course Materials Access
+* [x] Materials Download
+* [x] Assignment Submission
+* [x] Grade & Feedback Viewing
+* [x] Profile Management
 
 ## Lecturer Features
 
-- [x] Lecturer Dashboard
-- [x] Upload Materials
-- [x] Manage Materials
-- [x] Create Assignments
-- [x] View Submissions
-- [x] Grade Assignments
-- [x] Provide Feedback
+* [x] Lecturer Dashboard
+* [x] Course Editing
+* [x] Material Management
+* [x] Assignment Creation
+* [x] Assignment Editing
+* [x] Assignment Deletion
+* [x] Student Management
+* [x] Submission Grading
 
 ## Administrator Features
 
-- [x] Admin Dashboard
-- [x] User Management
-- [x] Course Management
-- [x] Lecturer Assignment
+* [x] Admin Dashboard
+* [x] User Management
+* [x] Course Management
+* [x] Dynamic Categories
+* [x] Lecturer Assignment
+* [x] Payment Monitoring
+* [x] Statistics Dashboard
 
-## Remaining Work
+## Deployment
 
-- [ ] Notification System Enhancements
-- [ ] Deliberate Security Vulnerabilities
-- [ ] Docker Deployment
-- [ ] Architecture Diagram
-- [ ] Final Security Testing
-- [ ] Final Documentation
+* [x] Docker Containerization
+* [x] Docker Compose Deployment
+* [x] Cloudflare Tunnel Hosting
+
+---
+
+# Project Authors
+
+Developed as part of the Ethical Hacking & Penetration Testing Assignment.
+
+Team Project – MyEduConnect LMS
