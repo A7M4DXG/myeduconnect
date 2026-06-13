@@ -5,16 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyEduConnect - Lecturer Dashboard</title>
     <link rel="stylesheet" href="css/lecturer-dashboard.css">
+    <style>
+        /* Fix alignment of student numbers in the My Courses table */
+        #tab-overview .data-table th:nth-child(4),
+        #overviewCoursesBody td:nth-child(4) {
+            text-align: left !important;
+        }
+        
+        /* --- Modal Panel Explicit Styles --- */
+        .modal-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6); z-index: 9999;
+            align-items: center; justify-content: center;
+            backdrop-filter: blur(2px);
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: #ffffff; padding: 24px 32px; border-radius: 12px;
+            width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            position: relative;
+        }
+        .modal-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; 
+        }
+        .modal-header h2 { font-size: 1.25rem; font-weight: 700; color: #0f172a; margin: 0; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b; transition: 0.2s; }
+        .modal-close:hover { color: #0f172a; }
+        .modal-actions { margin-top: 24px; display: flex; justify-content: flex-end; gap: 12px; }
+        
+        .btn-secondary { background: #f1f5f9; color: #334155; padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-danger { background: #ef4444; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-danger:hover { background: #dc2626; }
+    </style>
 </head>
 <body>
     <nav class="lms-navbar">
         <div class="nav-container">
             <div class="nav-left">
-                <a href="student-dashboard.html" class="nav-brand">MyEduConnect</a>
+                <a href="lecturer-dashboard.html" class="nav-brand">MyEduConnect</a>
                 <span class="nav-role-badge">Lecturer</span>
             </div>
             <div class="nav-right">
-                <a href="student-dashboard.html" class="nav-link-btn">Student Portal</a>
                 <div class="profile-dropdown-container">
                     <button class="avatar-btn" id="profileDropdownBtn">
                         <span id="avatarText">L</span>
@@ -30,7 +64,6 @@
     </nav>
 
     <div class="lec-layout">
-        <!-- Sidebar -->
         <aside class="lec-sidebar">
             <div class="sidebar-title">Lecturer Portal</div>
             <nav class="sidebar-nav">
@@ -57,10 +90,8 @@
             </nav>
         </aside>
 
-        <!-- Main -->
         <main class="lec-main">
 
-            <!-- ── OVERVIEW ── -->
             <section class="lec-section active" id="tab-overview">
                 <div class="section-title">
                     <h1>My Dashboard</h1>
@@ -112,16 +143,15 @@
                     </div>
                     <table class="data-table">
                         <thead>
-                            <tr><th>Code</th><th>Name</th><th>Category</th><th>Students</th></tr>
+                            <tr><th>Code</th><th>Name</th><th>Category</th><th>Students</th><th>Actions</th></tr>
                         </thead>
                         <tbody id="overviewCoursesBody">
-                            <tr><td colspan="4" class="loading-row">Loading…</td></tr>
+                            <tr><td colspan="5" class="loading-row">Loading…</td></tr>
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- ── ASSIGNMENTS ── -->
             <section class="lec-section" id="tab-assignments">
                 <div class="section-title">
                     <h1>Manage Assignments</h1>
@@ -186,7 +216,6 @@
                 </div>
             </section>
 
-            <!-- ── MATERIALS ── -->
             <section class="lec-section" id="tab-materials">
                 <div class="section-title">
                     <h1>Manage Materials</h1>
@@ -257,7 +286,6 @@
                 </div>
             </section>
 
-            <!-- ── STUDENTS ── -->
             <section class="lec-section" id="tab-students">
                 <div class="section-title">
                     <h1>Student List</h1>
@@ -284,7 +312,6 @@
                 </div>
             </section>
 
-            <!-- ── SUBMISSIONS ── -->
             <section class="lec-section" id="tab-submissions">
                 <div class="section-title">
                     <h1>Submission Review</h1>
@@ -332,6 +359,87 @@
             </section>
 
         </main>
+    </div>
+
+    <!-- Edit Course Modal -->
+    <div class="modal-overlay" id="editCourseModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Edit Course</h2>
+                <button type="button" class="modal-close" onclick="closeEditCourseModal()">&times;</button>
+            </div>
+            <form id="editCourseForm">
+                <input type="hidden" id="editCourseId">
+                <div class="form-group">
+                    <label>Course Name *</label>
+                    <input type="text" id="editCourseName" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" id="editCourseCategory">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editCourseDesc" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeEditCourseModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Assignment Modal -->
+    <div class="modal-overlay" id="editAssignmentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Edit Assignment</h2>
+                <button type="button" class="modal-close" onclick="closeEditAssignModal()">&times;</button>
+            </div>
+            <form id="editAssignmentForm">
+                <input type="hidden" id="editAssignId">
+                <div class="form-group">
+                    <label>Title *</label>
+                    <input type="text" id="editAssignTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editAssignDesc" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Due Date *</label>
+                        <input type="datetime-local" id="editAssignDue" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Marks</label>
+                        <input type="number" id="editAssignMax" min="1">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeEditAssignModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Custom Delete Confirmation Modal (Replaces Native Confirm popup) -->
+    <div class="modal-overlay" id="deleteConfirmModal">
+        <div class="modal" style="max-width: 400px; text-align: center; padding: 32px 24px;">
+            <div style="color: #ef4444; margin-bottom: 16px;">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+            </div>
+            <h2 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 8px;">Are you sure?</h2>
+            <p id="confirmModalMessage" style="color: #64748b; margin-bottom: 24px;">This action cannot be undone.</p>
+            <div style="display: flex; justify-content: center; gap: 12px;">
+                <button type="button" class="btn-secondary" id="cancelConfirmBtn">Cancel</button>
+                <button type="button" class="btn-danger" id="confirmActionBtn">Confirm Delete</button>
+            </div>
+        </div>
     </div>
 
     <div class="toast" id="toast"></div>

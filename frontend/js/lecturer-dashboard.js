@@ -5,21 +5,42 @@
 let myCourses    = [];
 let myAssignments = {};   // keyed by courseId
 
+// Custom Confirmation State
+let confirmActionCallback = null;
+
 document.addEventListener('DOMContentLoaded', () => {
     guardLecturer();
     setupSidebar();
     setupDropdown();
+    setupModals();
 });
 
-/* ── Auth guard (Ahmed API) ── */
+/* ── Auth guard (Strict RBAC) ── */
 function guardLecturer() {
     fetch('/profile', { credentials: 'include' })
-        .then(r => r.ok ? r.json() : null)
+        .then(r => {
+            if (!r.ok) {
+                window.location.replace('login.html');
+                return null;
+            }
+            return r.json();
+        })
         .then(data => {
-            if (!data || (data.role !== 'lecturer' && data.role !== 'admin')) {
+            if (!data) return;
+
+            // --- STRICT RBAC ENFORCEMENT ---
+            if (data.role === 'student') {
+                window.location.replace('student-dashboard.html');
+                return;
+            } else if (data.role === 'admin') {
+                window.location.replace('admin-dashboard.html');
+                return;
+            } else if (data.role !== 'lecturer') {
                 window.location.replace('login.html');
                 return;
             }
+
+            // Apply UI updates if authenticated and authorized
             document.getElementById('dropdownUsername').textContent = data.username;
             document.getElementById('avatarText').textContent = data.username.charAt(0).toUpperCase();
             document.getElementById('welcomeLec').textContent = `Welcome back, ${data.username}!`;
@@ -30,49 +51,57 @@ function guardLecturer() {
 
 /* ── Boot ── */
 function loadAll() {
-    // Ahmed doesn't have a single /lecturer/stats endpoint.
-    // Fetching the base data required to formulate dashboard.
     loadCoursesAndStats();
 }
 
 /* ── Courses & Stats (Ahmed API Map) ── */
 function loadCoursesAndStats() {
-    fetch('/lecturer/courses', { credentials: 'include' })
-        .then(r => r.ok ? r.json() : [])
-        .then(coursesData => {
-            myCourses = Array.isArray(coursesData) ? coursesData : [];
-            
-            // Render Courses
-            renderOverviewCourses(myCourses);
-            populateCourseSelects(myCourses);
-            loadAllAssignments(myCourses);
+    fetch('/lecturer/courses', {
+        credentials: 'include'
+    })
+    .then(r => r.ok ? r.json() : [])
+    .then(coursesData => {
+        myCourses = Array.isArray(coursesData) ? coursesData : [];
+        renderOverviewCourses(myCourses);
+        populateCourseSelects(myCourses);
+        loadAllAssignments(myCourses);
+    })
+    .catch(err => console.error('Failed to load courses:', err));
 
-            // Populate Course stat
-            document.getElementById('statCourses').textContent = myCourses.length || '0';
-        });
-
-    // Submissions stat calculation based on Ahmed's global endpoint
-    fetch('/lecturer/submissions', { credentials: 'include' })
-        .then(r => r.ok ? r.json() : [])
-        .then(subs => {
-            document.getElementById('statSubmissions').textContent = subs.length || '0';
-        }).catch(() => {
-            document.getElementById('statSubmissions').textContent = '0';
-        });
+    fetch('/lecturer/stats', {
+        credentials: 'include'
+    })
+    .then(r => r.ok ? r.json() : {})
+    .then(stats => {
+        document.getElementById('statCourses').textContent = stats.courses || 0;
+        document.getElementById('statStudents').textContent = stats.students || 0;
+        document.getElementById('statAssignments').textContent = stats.assignments || 0;
+        document.getElementById('statSubmissions').textContent = stats.submissions || 0;
+    })
+    .catch(err => console.error('Failed to load stats:', err));
 }
 
 function renderOverviewCourses(courses) {
     const tbody = document.getElementById('overviewCoursesBody');
+
     if (!courses.length) {
-        tbody.innerHTML = '<tr><td colspan="4" class="loading-row">No courses assigned to your account.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="loading-row">No courses assigned to your account.</td></tr>';
         return;
     }
+
     tbody.innerHTML = courses.map(c => `
         <tr>
-            <td><code style="background:#f0f2f5;padding:2px 6px;border-radius:4px;font-size:.82rem">${esc(c.course_code||'—')}</code></td>
-            <td><strong>${esc(c.course_name||'—')}</strong></td>
-            <td style="color:var(--muted)">—</td>
+            <td>
+                <code style="background:#f0f2f5;padding:2px 6px;border-radius:4px;font-size:.82rem">
+                    ${esc(c.course_code || '—')}
+                </code>
+            </td>
+            <td><strong>${esc(c.course_name || '—')}</strong></td>
+            <td style="color:var(--muted)">${esc(c.course_category || '—')}</td>
             <td style="text-align:center">${c.enrollment_count || 0}</td>
+            <td>
+                <button class="btn-sm btn-primary" onclick="openEditCourseModal(${c.id})">Edit Course</button>
+            </td>
         </tr>
     `).join('');
 }
@@ -140,9 +169,17 @@ function renderAssignmentsTable(filterCourseId) {
             <td style="color:var(--muted)">${fmtDate(a.due_date)}</td>
             <td style="text-align:center">${a.max_marks || 100}</td>
             <td>
-                <button class="btn-sm btn-success" onclick="viewSubmissions(${a.course_id}, ${a.id})">
-                    View Submissions
-                </button>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn-sm btn-success" onclick="viewSubmissions(${a.course_id}, ${a.id})">
+                        View Submissions
+                    </button>
+                    <button class="btn-sm btn-primary" onclick="openEditAssignModal(${a.id}, ${a.course_id})">
+                        Edit
+                    </button>
+                    <button class="btn-sm btn-danger" onclick="deleteAssignment(${a.id})">
+                        Delete
+                    </button>
+                </div>
             </td>
         </tr>
     `).join('');
@@ -195,6 +232,151 @@ function viewSubmissions(courseId, assignId) {
     document.getElementById('subCourseSelect').value = courseId;
     populateAssignmentSelect(courseId, assignId);
 }
+
+function deleteAssignment(id) {
+    openConfirmModal('Are you sure you want to delete this assignment?', async () => {
+        try {
+            const r = await fetch(`/assignments/${id}`, {
+                method: 'DELETE', credentials: 'include'
+            });
+            if(r.ok) {
+                showToast('Assignment deleted successfully', 'success');
+                loadAllAssignments(myCourses); 
+            } else {
+                const data = await r.json().catch(() => ({}));
+                showToast(data.message || 'Failed to delete assignment', 'error');
+            }
+        } catch(err) {
+            showToast('Error deleting assignment', 'error');
+        }
+    });
+}
+
+/* ── MODALS (Edit Course, Edit Assignment, Confirm Delete) ── */
+function setupModals() {
+    document.getElementById('confirmActionBtn').addEventListener('click', () => {
+        if (confirmActionCallback) confirmActionCallback();
+        closeConfirmModal();
+    });
+    document.getElementById('cancelConfirmBtn').addEventListener('click', closeConfirmModal);
+
+    // Edit Course Submit
+    document.getElementById('editCourseForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('editCourseId').value;
+        const body = {
+            course_name: document.getElementById('editCourseName').value.trim(),
+            course_category: document.getElementById('editCourseCategory').value.trim(),
+            description: document.getElementById('editCourseDesc').value.trim()
+        };
+        
+        try {
+            const r = await fetch(`/lecturer/courses/${id}`, {
+                method: 'PUT', credentials: 'include',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+            const data = await r.json().catch(() => ({}));
+            if (r.ok) {
+                showToast(data.message || 'Course updated successfully', 'success');
+                closeEditCourseModal();
+                loadCoursesAndStats(); 
+            } else {
+                showToast(data.message || 'Failed to update course', 'error');
+            }
+        } catch(err) {
+            showToast('Error updating course', 'error');
+        }
+    });
+
+    // Edit Assignment Submit
+    document.getElementById('editAssignmentForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('editAssignId').value;
+        const body = {
+            title: document.getElementById('editAssignTitle').value.trim(),
+            description: document.getElementById('editAssignDesc').value.trim(),
+            due_date: document.getElementById('editAssignDue').value,
+            max_marks: parseInt(document.getElementById('editAssignMax').value) || 100
+        };
+        
+        try {
+            const r = await fetch(`/assignments/${id}`, {
+                method: 'PUT', credentials: 'include',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+            const data = await r.json().catch(() => ({}));
+            if (r.ok) {
+                showToast(data.message || 'Assignment updated successfully', 'success');
+                closeEditAssignModal();
+                loadAllAssignments(myCourses); 
+            } else {
+                showToast(data.message || 'Failed to update assignment', 'error');
+            }
+        } catch(err) {
+            showToast('Error updating assignment', 'error');
+        }
+    });
+
+    window.addEventListener('click', e => {
+        if (e.target.id === 'editCourseModal') closeEditCourseModal();
+        if (e.target.id === 'editAssignmentModal') closeEditAssignModal();
+        if (e.target.id === 'deleteConfirmModal') closeConfirmModal();
+    });
+}
+
+function openConfirmModal(message, callback) {
+    document.getElementById('confirmModalMessage').textContent = message;
+    confirmActionCallback = callback;
+    document.getElementById('deleteConfirmModal').classList.add('open');
+}
+
+function closeConfirmModal() {
+    document.getElementById('deleteConfirmModal').classList.remove('open');
+    confirmActionCallback = null;
+}
+
+function openEditCourseModal(id) {
+    const course = myCourses.find(c => c.id === id);
+    if(!course) return;
+    document.getElementById('editCourseId').value = course.id;
+    document.getElementById('editCourseName').value = course.course_name || '';
+    document.getElementById('editCourseCategory').value = course.course_category || '';
+    document.getElementById('editCourseDesc').value = course.description || '';
+    document.getElementById('editCourseModal').classList.add('open');
+}
+
+function closeEditCourseModal() {
+    document.getElementById('editCourseModal').classList.remove('open');
+}
+
+function openEditAssignModal(assignId, courseId) {
+    const list = myAssignments[courseId] || [];
+    const assign = list.find(a => a.id === assignId);
+    if(!assign) return;
+    
+    document.getElementById('editAssignId').value = assign.id;
+    document.getElementById('editAssignTitle').value = assign.title || '';
+    document.getElementById('editAssignDesc').value = assign.description || '';
+    
+    if (assign.due_date) {
+        const d = new Date(assign.due_date);
+        const tzOffset = d.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(d - tzOffset)).toISOString().slice(0, 16);
+        document.getElementById('editAssignDue').value = localISOTime;
+    } else {
+        document.getElementById('editAssignDue').value = '';
+    }
+
+    document.getElementById('editAssignMax').value = assign.max_marks || 100;
+    document.getElementById('editAssignmentModal').classList.add('open');
+}
+
+function closeEditAssignModal() {
+    document.getElementById('editAssignmentModal').classList.remove('open');
+}
+
 
 /* ── Materials (Ahmed API Map) ── */
 function setupMaterials() {
@@ -264,32 +446,54 @@ function renderMaterialsTable(materials) {
 }
 
 function deleteMaterial(id) {
-    if (!confirm('Delete this material?')) return;
-    fetch(`/materials/${id}`, { method: 'DELETE', credentials: 'include' })
-        .then(r => {
-            if(r.ok) {
-                showToast('Material deleted', 'success');
-                const sel = document.getElementById('matFilterCourse').value;
-                if (sel) loadMaterials(sel);
-            }
-        });
+    openConfirmModal('Are you sure you want to delete this material?', () => {
+        fetch(`/materials/${id}`, { method: 'DELETE', credentials: 'include' })
+            .then(r => {
+                if(r.ok) {
+                    showToast('Material deleted', 'success');
+                    const sel = document.getElementById('matFilterCourse').value;
+                    if (sel) loadMaterials(sel);
+                }
+            });
+    });
 }
 
-/* ── Students (Graceful Degradation) ── */
+/* ── Students (Full Implementation) ── */
 function setupStudents() {
-    // Ahmed's API doesn't have a direct /lecturer/students/:courseId endpoint
-    // Keeping UI intact but rendering gracefully.
     document.getElementById('studentCourseSelect').addEventListener('change', e => {
-        renderStudentsTable([]);
+        const courseId = e.target.value;
+        
+        if (!courseId) {
+            renderStudentsTable([]);
+            return;
+        }
+
+        fetch(`/lecturer/students/${courseId}`, { credentials: 'include' })
+            .then(r => r.ok ? r.json() : [])
+            .then(students => renderStudentsTable(students))
+            .catch(err => {
+                console.error('Error loading students:', err);
+                renderStudentsTable([]);
+            });
     });
 }
 
 function renderStudentsTable(students) {
     const tbody = document.getElementById('studentsTableBody');
-    if (!students.length) {
-        tbody.innerHTML = '<tr><td colspan="4" class="loading-row">Student listing not supported in current API version.</td></tr>';
+    
+    if (!students || students.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="loading-row">No students enrolled.</td></tr>';
         return;
     }
+
+    tbody.innerHTML = students.map((s, index) => `
+        <tr>
+            <td style="color:var(--muted)">${index + 1}</td>
+            <td><strong>${esc(s.username || '—')}</strong></td>
+            <td><a href="mailto:${esc(s.email)}" style="color:var(--primary);">${esc(s.email || '—')}</a></td>
+            <td style="color:var(--muted)">${fmtDate(s.enrolled_at)}</td>
+        </tr>
+    `).join('');
 }
 
 /* ── Submissions & Grading (Ahmed API Map) ── */
@@ -397,7 +601,6 @@ function setupSidebar() {
         btn.addEventListener('click', () => switchTab(btn.dataset.tab));
     });
 
-    // Lazy-init tab-specific logic on first activation
     let inited = {};
     const origSwitch = switchTab;
     window.switchTab = function(tab) {

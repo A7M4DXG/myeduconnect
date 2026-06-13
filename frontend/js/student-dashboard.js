@@ -16,8 +16,9 @@ function initPortal() {
     fetchUserProfile();
     fetchEnrolledCourses();
     fetchRecentActivity();
+    loadNotifications(); // NEW: Fetches real notifications from the database
     updateCartBadge();
-    fetchStudentAssignments(); // NEW: Loads the assignment tracking
+    fetchStudentAssignments(); 
 }
 
 /* ── Profile & Core Data ── */
@@ -28,20 +29,36 @@ function fetchUserProfile() {
         headers: { 'Content-Type': 'application/json' }
     })
     .then(response => {
-        if (!response.ok) { window.location.replace('login.html'); }
+        if (!response.ok) { 
+            window.location.replace('login.html'); 
+            return null; 
+        }
         return response.json();
     })
     .then(data => {
-        if (data && data.username) {
+        if (!data) return;
+
+        // --- STRICT RBAC ENFORCEMENT ---
+        if (data.role === 'lecturer') {
+            window.location.replace('lecturer-dashboard.html');
+            return;
+        } else if (data.role === 'admin') {
+            window.location.replace('admin-dashboard.html');
+            return;
+        } else if (data.role !== 'student') {
+            window.location.replace('login.html');
+            return;
+        }
+
+        // Apply UI updates if authenticated and authorized
+        if (data.username) {
             document.getElementById('welcomeMessage').textContent = `Welcome back, ${data.username}`;
             document.getElementById('dropdownUsername').textContent = data.username;
             document.getElementById('avatarText').textContent = data.username.charAt(0).toUpperCase();
         }
     })
     .catch(() => {
-        document.getElementById('welcomeMessage').textContent = 'Welcome to the portal';
-        document.getElementById('dropdownUsername').textContent = 'Student';
-        document.getElementById('avatarText').textContent = '?';
+        window.location.replace('login.html');
     });
 }
 
@@ -144,19 +161,16 @@ function renderCourses(coursesArray) {
     });
 }
 
-/* ── NEW: Assignment Workflow Tracking ── */
+/* ── Assignment Workflow Tracking ── */
 async function fetchStudentAssignments() {
     try {
-        // 1. Fetch courses to know which assignments to look for
         const coursesRes = await fetch('/my-courses', { credentials: 'include' });
         if (!coursesRes.ok) return;
         const courses = await coursesRes.json();
 
-        // 2. Fetch all student submissions
         const subsRes = await fetch('/my-submissions', { credentials: 'include' });
         const submissions = subsRes.ok ? await subsRes.json() : [];
 
-        // 3. Fetch assignments for each course
         let allAssignments = [];
         for (let course of courses) {
             const courseId = course.id || course.course_id;
@@ -172,7 +186,6 @@ async function fetchStudentAssignments() {
             }
         }
 
-        // 4. Map status (Not Submitted, Submitted, Graded)
         const mappedAssignments = allAssignments.map(a => {
             const sub = submissions.find(s => s.assignment_id === a.id);
             let status = 'Not Submitted';
@@ -193,8 +206,8 @@ async function fetchStudentAssignments() {
 }
 
 function renderAssignmentsTable(assignments) {
-    const container = document.getElementById('assignmentsBody'); // Assuming this exists in your HTML
-    if (!container) return; // Fail gracefully if not on dashboard page
+    const container = document.getElementById('assignmentsBody'); 
+    if (!container) return; 
 
     if (assignments.length === 0) {
         container.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No assignments due.</td></tr>';
@@ -223,7 +236,7 @@ function renderAssignmentsTable(assignments) {
     }).join('');
 }
 
-/* ── Notifications & Cart ── */
+/* ── Cart Badge ── */
 function updateCartBadge() {
     fetch('/cart', {
         method: 'GET',
@@ -238,18 +251,63 @@ function updateCartBadge() {
     .catch(() => console.warn("Failed to fetch cart count"));
 }
 
+/* ── ACTUAL NOTIFICATION SYSTEM (Database Integration) ── */
+function loadNotifications() {
+    fetch('/notifications', {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.ok ? res.json() : [])
+    .then(notifications => {
+        const notifList = document.getElementById('notificationList');
+        const notifBadge = document.getElementById('notifBadge');
+        
+        if (!notifList || !notifBadge) return;
+        
+        notifList.innerHTML = '';
+        
+        if (!Array.isArray(notifications) || notifications.length === 0) {
+            notifList.innerHTML = '<div class="dropdown-item text-muted" style="cursor:default; padding: 12px 16px;">No new notifications</div>';
+            notifBadge.style.display = 'none';
+            return;
+        }
+        
+        notifBadge.style.display = 'block';
+        
+        notifications.forEach(notif => {
+            const message = notif.message || 'System Notification';
+            const dateStr = notif.created_at ? new Date(notif.created_at).toLocaleString('en-GB', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: 'numeric', minute: '2-digit', hour12: true
+            }).toUpperCase() : '';
+
+            // Clean, modern dropdown list item
+            notifList.innerHTML += `
+                <div class="dropdown-item nav-notif-item" style="display:flex; flex-direction:column; gap:4px; padding: 12px 16px; border-bottom: 1px solid #f1f3f4; align-items:flex-start;">
+                    <span style="font-weight:600; font-size: 0.85rem; color: #202124; white-space: normal; line-height: 1.4;">${message}</span>
+                    <span style="font-size: 0.75rem; color: #5f6368; font-weight: 500;">${dateStr}</span>
+                </div>
+            `;
+        });
+    })
+    .catch(err => {
+        console.error("Failed to load notifications:", err);
+        const notifList = document.getElementById('notificationList');
+        if (notifList) notifList.innerHTML = '<div class="dropdown-item text-muted" style="cursor:default; padding: 12px 16px;">Error loading notifications</div>';
+    });
+}
+
+/* ── RECENT ACTIVITY (Activity Stream ONLY) ── */
 function fetchRecentActivity() {
     const activityContainer = document.getElementById('activityContainer');
-    const notifList = document.getElementById('notificationList');
-    const notifBadge = document.getElementById('notifBadge');
     
     Promise.all([
-        fetch('/my-submissions', { credentials: 'include' }).then(r => r.ok ? r.json() : []), // UPDATED
+        fetch('/my-submissions', { credentials: 'include' }).then(r => r.ok ? r.json() : []),
         fetch('/my-courses', { credentials: 'include' }).then(r => r.ok ? r.json() : [])
     ])
     .then(([submissions, courses]) => {
         if(activityContainer) activityContainer.innerHTML = '';
-        if(notifList) notifList.innerHTML = '';
         
         const safeSubmissions = Array.isArray(submissions) ? submissions : [];
         const safeCourses = Array.isArray(courses) ? courses : [];
@@ -259,27 +317,20 @@ function fetchRecentActivity() {
             hasActivity = true;
             const filename = sub.file_name || 'Assignment File';
             if(activityContainer) activityContainer.appendChild(createActivityItem('upload', `Submitted assignment: <strong>${filename}</strong>`));
-            if(notifList) notifList.innerHTML += `<div class="dropdown-item nav-notif-item"><div class="activity-icon upload"></div><span>Uploaded: ${filename}</span></div>`;
         });
 
         safeCourses.forEach(course => {
             hasActivity = true;
             const title = course.course_name || course.title || 'Course';
             if(activityContainer) activityContainer.appendChild(createActivityItem('enroll', `Enrolled in: <strong>${title}</strong>`));
-            if(notifList) notifList.innerHTML += `<div class="dropdown-item nav-notif-item"><div class="activity-icon enroll"></div><span>Enrolled: ${title}</span></div>`;
         });
 
         if (!hasActivity) {
-            if(activityContainer) activityContainer.innerHTML = '<div class="empty-state">No data available</div>';
-            if(notifList) notifList.innerHTML = '<div class="dropdown-item text-muted" style="cursor:default;">No notifications</div>';
-            if(notifBadge) notifBadge.style.display = 'none';
-        } else {
-            if(notifBadge) notifBadge.style.display = 'block';
+            if(activityContainer) activityContainer.innerHTML = '<div class="empty-state">No recent activity.</div>';
         }
     })
     .catch(() => {
         if(activityContainer) activityContainer.innerHTML = '<div class="empty-state">No data available</div>';
-        if(notifList) notifList.innerHTML = '<div class="dropdown-item text-muted" style="cursor:default;">No data available</div>';
     });
 }
 

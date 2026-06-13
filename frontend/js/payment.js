@@ -1,5 +1,6 @@
 let currentCartItems = [];
 let selectedPaymentMethod = null;
+let checkoutTotalAmount = 0; 
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Fetch Cart Data
@@ -25,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        checkoutTotalAmount = total; // Save total to process payment
         document.getElementById('checkoutCount').textContent = cartItems.length;
         document.getElementById('checkoutTotal').textContent = `RM ${total.toFixed(2)}`;
     });
@@ -50,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 3. Handle Payment Confirmation
-    document.getElementById('payBtn').addEventListener('click', (e) => {
+    document.getElementById('payBtn').addEventListener('click', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('payBtn');
         const msg = document.getElementById('paymentMsg');
@@ -67,80 +69,58 @@ document.addEventListener('DOMContentLoaded', () => {
         msg.style.color = 'inherit';
         msg.textContent = `Initiating secure connection to ${selectedPaymentMethod}...`;
 
-        // Map cart items to enrollment API POST requests
-        const enrollPromises = currentCartItems.map(item => 
-    fetch('/enroll', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ course_id: item.course_id })
-    }).then(async res => {
-
-    /* enrollment successful */
-
-    if(res.ok){
-
-        return fetch(
-
-            `/cart/${item.id}`,
-
-            {
-
-                method:'DELETE',
-
-                credentials:'include'
-
-            }
-
-        );
-
-    }
-
-    /* already enrolled */
-
-    if(res.status === 409){
-
-        console.log(
-            'Already enrolled'
-        );
-
-        return fetch(
-
-            `/cart/${item.id}`,
-
-            {
-
-                method:'DELETE',
-
-                credentials:'include'
-
-            }
-
-        );
-
-    }
-
-    /* real failure */
-
-    throw new Error(
-        'Enrollment failed'
-    );
-
-})
-);
-
-        // Execute all promises simultaneously
-        Promise.all(enrollPromises)
-            .then(() => {
-                msg.style.color = '#1e8e3e';
-                msg.textContent = `Mock Payment Successful! Enrolling you via ${selectedPaymentMethod}...`;
-                setTimeout(() => { window.location.replace('student-dashboard.html'); }, 1800);
-            })
-            .catch(() => {
-                msg.style.color = '#d93025';
-                msg.textContent = 'Enrollment encountered an error. Please contact support.';
-                btn.disabled = false;
-                btn.textContent = 'Confirm Payment';
+        try {
+            // --- STEP 1. Record the Payment in the database ---
+            const transactionId = 'TXN-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
+            
+            const paymentRes = await fetch('/payment', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: checkoutTotalAmount,
+                    payment_method: selectedPaymentMethod,
+                    transaction_id: transactionId
+                })
             });
+
+            if (!paymentRes.ok) throw new Error('Payment recording failed.');
+
+            // --- STEP 2. Execute Enrollments ---
+            // Map cart items to enrollment API POST requests
+            const enrollPromises = currentCartItems.map(item => 
+                fetch('/enroll', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ course_id: item.course_id })
+                }).then(async res => {
+                    /* enrollment successful or already enrolled */
+                    if(res.ok || res.status === 409){
+                        return fetch(`/cart/${item.id}`, {
+                            method:'DELETE',
+                            credentials:'include'
+                        });
+                    }
+                    /* real failure */
+                    throw new Error('Enrollment failed');
+                })
+            );
+
+            // Execute all promises simultaneously
+            await Promise.all(enrollPromises);
+            
+            // Success State
+            msg.style.color = '#1e8e3e';
+            msg.textContent = `Payment Successful! Enrolling you via ${selectedPaymentMethod}...`;
+            setTimeout(() => { window.location.replace('student-dashboard.html'); }, 1800);
+
+        } catch (error) {
+            msg.style.color = '#d93025';
+            msg.textContent = 'Enrollment encountered an error. Please contact support.';
+            btn.disabled = false;
+            btn.textContent = 'Confirm Payment';
+            console.error(error);
+        }
     });
 });

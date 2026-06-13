@@ -10,11 +10,10 @@
     <nav class="lms-navbar">
         <div class="nav-container">
             <div class="nav-left">
-                <a href="student-dashboard.html" class="nav-brand">MyEduConnect</a>
+                <a href="admin-dashboard.html" class="nav-brand">MyEduConnect</a>
                 <span class="nav-role-badge">Admin</span>
             </div>
             <div class="nav-right">
-                <a href="student-dashboard.html" class="nav-link-btn">Student Portal</a>
                 <div class="profile-dropdown-container">
                     <button class="avatar-btn" id="profileDropdownBtn">
                         <span id="avatarText">A</span>
@@ -30,7 +29,6 @@
     </nav>
 
     <div class="admin-layout">
-        <!-- Sidebar -->
         <aside class="admin-sidebar">
             <div class="sidebar-title">Control Panel</div>
             <nav class="sidebar-nav">
@@ -53,10 +51,8 @@
             </nav>
         </aside>
 
-        <!-- Main Content -->
         <main class="admin-main">
 
-            <!-- ── OVERVIEW ── -->
             <section class="admin-section active" id="section-stats">
                 <div class="section-title">
                     <h1>Platform Overview</h1>
@@ -126,7 +122,6 @@
                 </div>
             </section>
 
-            <!-- ── USER MANAGEMENT ── -->
             <section class="admin-section" id="section-users">
                 <div class="section-title">
                     <h1>User Management</h1>
@@ -157,7 +152,6 @@
                 </div>
             </section>
 
-            <!-- ── COURSE MANAGEMENT ── -->
             <section class="admin-section" id="section-courses">
                 <div class="section-title">
                     <h1>Course Management</h1>
@@ -190,7 +184,6 @@
                 </div>
             </section>
 
-            <!-- ── PAYMENT MANAGEMENT ── -->
             <section class="admin-section" id="section-payments">
                 <div class="section-title">
                     <h1>Payment Management</h1>
@@ -225,7 +218,6 @@
         </main>
     </div>
 
-    <!-- Create Course Modal -->
     <div class="modal-overlay" id="createCourseModal">
         <div class="modal">
             <div class="modal-header">
@@ -242,15 +234,12 @@
                     <input type="text" id="fieldCourseName" placeholder="e.g. Introduction to Python" required>
                 </div>
                 <div class="form-group">
-                    <label>Category</label>
-                    <select id="fieldCourseCategory">
-                        <option value="Programming">Programming</option>
-                        <option value="Cybersecurity">Cybersecurity</option>
-                        <option value="Mathematics">Mathematics</option>
-                        <option value="Blockchain">Blockchain</option>
-                        <option value="Languages">Languages</option>
-                        <option value="Sports">Sports</option>
+                    <label>Category *</label>
+                    <select id="fieldCourseCategory" required>
+                        <option value="" disabled selected>— Select Category —</option>
+                        <option value="custom" style="font-weight: bold;">+ Add Custom Category</option>
                     </select>
+                    <input type="text" id="customCategoryInput" style="display: none; margin-top: 10px;" placeholder="Enter new category name">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -279,7 +268,6 @@
         </div>
     </div>
 
-    <!-- Toast notification -->
     <div class="toast" id="toast"></div>
 
     <script src="js/admin-dashboard.js"></script>

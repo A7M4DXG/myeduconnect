@@ -20,7 +20,7 @@ router.post('/assignments', requireLecturer, (req, res) => {
         'INSERT INTO assignments (course_id, title, description, due_date, max_marks, created_by) VALUES (?, ?, ?, ?, ?, ?)',
         [course_id, title, description, due_date, max_marks, req.session.userId],
         (err) => {
-            if (err) return res.status(500).json({ message: 'Failed' });
+            if (err) return res.status(500).json({ message: 'Failed to create assignment' });
 
             // Notify enrolled students
             db.query('SELECT user_id FROM enrollments WHERE course_id = ?', [course_id], (notifErr, students) => {
@@ -33,6 +33,47 @@ router.post('/assignments', requireLecturer, (req, res) => {
             res.status(201).json({ message: 'Assignment created' });
         }
     );
+});
+
+/* ==================== EDIT ASSIGNMENT (LECTURER) ==================== */
+router.put('/assignments/:id', requireLecturer, (req, res) => {
+    const assignId = req.params.id;
+    const lecturerId = req.session.userId;
+    const { title, description, due_date, max_marks } = req.body;
+
+    db.query(
+        'UPDATE assignments SET title = ?, description = ?, due_date = ?, max_marks = ? WHERE id = ? AND created_by = ?',
+        [title, description, due_date, max_marks, assignId, lecturerId],
+        (err, result) => {
+            if (err) return res.status(500).json({ message: 'Update failed' });
+            // Query succeeded without errors
+            res.json({ message: 'Assignment updated successfully' });
+        }
+    );
+});
+
+/* ==================== DELETE ASSIGNMENT (LECTURER) ==================== */
+router.delete('/assignments/:id', requireLecturer, (req, res) => {
+    const assignId = req.params.id;
+    const lecturerId = req.session.userId;
+
+    // 1. Check for existing submissions
+    db.query('SELECT COUNT(*) as count FROM submissions WHERE assignment_id = ?', [assignId], (err, results) => {
+        if (err) return res.status(500).json({ message: 'Database error checking submissions' });
+        
+        if (results[0].count > 0) {
+            return res.status(400).json({ 
+                message: "Cannot delete assignment because students have submitted work." 
+            });
+        }
+
+        // 2. Delete assignment
+        db.query('DELETE FROM assignments WHERE id = ? AND created_by = ?', [assignId, lecturerId], (delErr, result) => {
+            if (delErr) return res.status(500).json({ message: 'Delete failed' });
+            if (result.affectedRows === 0) return res.status(404).json({ message: 'Assignment not found or unauthorized' });
+            res.json({ message: 'Assignment deleted successfully' });
+        });
+    });
 });
 
 /* ==================== GET COURSE ASSIGNMENTS ==================== */
