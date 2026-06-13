@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCourseEnvironment();
     setupSidebarInteraction();
     setupDropdowns();
+    loadNotifications();
 });
 
 function initCourseEnvironment() {
@@ -282,17 +283,31 @@ function getIconSvg(ext) {
 function setupDropdowns() {
     const profileBtn = document.getElementById('profileDropdownBtn');
     const profileMenu = document.getElementById('profileMenu');
+    const notifBtn = document.getElementById('notificationBtn');
+    const notifMenu = document.getElementById('notificationMenu');
     
     if (profileBtn && profileMenu) {
         profileBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             profileMenu.classList.toggle('show');
+            if(notifMenu) notifMenu.classList.remove('show'); 
+        });
+    }
+
+    if (notifBtn && notifMenu) {
+        notifBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notifMenu.classList.toggle('show');
+            if(profileMenu) profileMenu.classList.remove('show'); 
         });
     }
 
     document.addEventListener('click', (e) => {
         if (profileBtn && profileMenu && !profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
             profileMenu.classList.remove('show');
+        }
+        if (notifBtn && notifMenu && !notifBtn.contains(e.target) && !notifMenu.contains(e.target)) {
+            notifMenu.classList.remove('show');
         }
     });
 
@@ -332,4 +347,49 @@ function loadAssignments() {
                 <div class="content-card">Failed to load assignments.</div>
             `;
         });
+}
+
+function loadNotifications() {
+    fetch('/notifications', {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.ok ? res.json() : [])
+    .then(notifications => {
+        const notifList = document.getElementById('notificationList');
+        const notifBadge = document.getElementById('notifBadge');
+        
+        if (!notifList || !notifBadge) return;
+        
+        notifList.innerHTML = '';
+        
+        if (!Array.isArray(notifications) || notifications.length === 0) {
+            notifList.innerHTML = '<div class="dropdown-item text-muted" style="cursor:default; padding: 12px 16px;">No new notifications</div>';
+            notifBadge.style.display = 'none';
+            return;
+        }
+        
+        notifBadge.style.display = 'block';
+        
+        notifications.forEach(notif => {
+            const message = notif.message || 'System Notification';
+            const dateStr = notif.created_at ? new Date(notif.created_at).toLocaleString('en-GB', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: 'numeric', minute: '2-digit', hour12: true
+            }).toUpperCase() : '';
+
+            notifList.innerHTML += `
+                <div class="dropdown-item nav-notif-item" style="display:flex; flex-direction:column; gap:4px; padding: 12px 16px; border-bottom: 1px solid #f1f3f4; align-items:flex-start;">
+                    <span style="font-weight:600; font-size: 0.85rem; color: #202124; white-space: normal; line-height: 1.4;">${message}</span>
+                    <span style="font-size: 0.75rem; color: #5f6368; font-weight: 500;">${dateStr}</span>
+                </div>
+            `;
+        });
+    })
+    .catch(err => {
+        console.error("Failed to load notifications:", err);
+        const notifList = document.getElementById('notificationList');
+        if (notifList) notifList.innerHTML = '<div class="dropdown-item text-muted" style="cursor:default; padding: 12px 16px;">Error loading notifications</div>';
+    });
 }

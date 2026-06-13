@@ -1,3 +1,4 @@
+// File: lecturer-dashboard.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,6 +40,17 @@
         .btn-secondary:hover { background: #e2e8f0; }
         .btn-danger { background: #ef4444; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .btn-danger:hover { background: #dc2626; }
+
+        .dropdown-item.profile-link {
+            padding: 10px 16px; 
+            display: block; 
+            text-decoration: none; 
+            color: #333;
+            transition: background 0.2s;
+        }
+        .dropdown-item.profile-link:hover {
+            background: #f1f5f9;
+        }
     </style>
 </head>
 <body>
@@ -55,6 +67,7 @@
                     </button>
                     <div class="dropdown-menu" id="profileMenu">
                         <div class="dropdown-header"><span id="dropdownUsername">Lecturer</span></div>
+                        <a href="profile.html" class="dropdown-item profile-link">Profile</a>
                         <hr>
                         <button id="logoutBtn" class="dropdown-item text-danger">Logout</button>
                     </div>
@@ -361,7 +374,6 @@
         </main>
     </div>
 
-    <!-- Edit Course Modal -->
     <div class="modal-overlay" id="editCourseModal">
         <div class="modal">
             <div class="modal-header">
@@ -390,7 +402,6 @@
         </div>
     </div>
 
-    <!-- Edit Assignment Modal -->
     <div class="modal-overlay" id="editAssignmentModal">
         <div class="modal">
             <div class="modal-header">
@@ -425,7 +436,6 @@
         </div>
     </div>
     
-    <!-- Custom Delete Confirmation Modal (Replaces Native Confirm popup) -->
     <div class="modal-overlay" id="deleteConfirmModal">
         <div class="modal" style="max-width: 400px; text-align: center; padding: 32px 24px;">
             <div style="color: #ef4444; margin-bottom: 16px;">

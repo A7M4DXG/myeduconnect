@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyEduConnect - Admin Dashboard</title>
     <link rel="stylesheet" href="css/admin-dashboard.css">
+    <style>
+        .dropdown-item.profile-link {
+            padding: 10px 16px; 
+            display: block; 
+            text-decoration: none; 
+            color: #333;
+            transition: background 0.2s;
+        }
+        .dropdown-item.profile-link:hover {
+            background: #f1f5f9;
+        }
+    </style>
 </head>
 <body>
     <nav class="lms-navbar">
@@ -20,6 +32,7 @@
                     </button>
                     <div class="dropdown-menu" id="profileMenu">
                         <div class="dropdown-header"><span id="dropdownUsername">Admin</span></div>
+                        <a href="profile.html" class="dropdown-item profile-link">Profile</a>
                         <hr>
                         <button id="logoutBtn" class="dropdown-item text-danger">Logout</button>
                     </div>

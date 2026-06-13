@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyEduConnect - Profile</title>
+    <link rel="stylesheet" href="css/student-dashboard.css">
+    <style>
+        .profile-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 24px;
+        }
+
+        .profile-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+        }
+
+        .profile-header {
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: #0056D2;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+        }
+
+        .profile-role-badge {
+            display: inline-block;
+            background: #e8f0fe;
+            color: #0056D2;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            margin-top: 8px;
+        }
+
+        .info-group {
+            margin-bottom: 16px;
+        }
+
+        .info-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .info-group .info-value {
+            font-size: 1rem;
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-box .stat-num {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0056D2;
+            margin-bottom: 4px;
+        }
+
+        .stat-box .stat-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .courses-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .courses-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .courses-list li::before {
+            content: "•";
+            color: #0056D2;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .courses-list li:last-child {
+            border-bottom: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #334155;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #0056D2;
+            box-shadow: 0 0 0 3px rgba(0,86,210,0.1);
+        }
+
+        .btn-primary {
+            background: #0056D2;
+            color: white;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover {
+            background: #00419e;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            background: #f1f5f9;
+            color: #334155;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .btn-back:hover {
+            background: #e2e8f0;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #0f172a;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: #333;
+            color: white;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 0.3s;
+            z-index: 10000;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="lms-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="#" class="nav-brand" id="brandLink">MyEduConnect</a>
+            </div>
+            
+            <div class="nav-right">
+                <div class="profile-dropdown-container">
+                    <button class="avatar-btn" id="profileDropdownBtn">
+                        <span id="navAvatarText">?</span>
+                    </button>
+                    <div class="dropdown-menu" id="profileMenu">
+                        <div class="dropdown-header">
+                            <span id="dropdownUsername">Loading...</span>
+                        </div>
+                        <button id="logoutBtn" class="dropdown-item text-danger" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer;">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div style="max-width: 1000px; margin: 40px auto 0; padding: 0 20px;">
+        <a href="#" id="backToDashBtn" class="btn-back">
+            &larr; Back to Dashboard
+        </a>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-sidebar">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="mainAvatar">?</div>
+                    <h2 id="displayUsername" style="margin: 0; color: #0f172a;">Loading...</h2>
+                    <span class="profile-role-badge" id="displayRole">Role</span>
+                </div>
+                
+                <div class="info-group">
+                    <label>Email Address</label>
+                    <div class="info-value" id="displayEmail">loading@...</div>
+                </div>
+                
+                <div class="info-group">
+                    <label>Account Created</label>
+                    <div class="info-value" id="displayJoined">...</div>
+                </div>
+
+                <!-- Hidden for Admins and Lecturers -->
+                <div class="stats-grid" id="studentStatsGrid">
+                    <div class="stat-box">
+                        <div class="stat-num" id="statCourses">0</div>
+                        <div class="stat-label">Enrolled Courses</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num" id="statSubmissions">0</div>
+                        <div class="stat-label">Submissions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden for Admins and Lecturers -->
+            <div class="profile-card" id="studentCoursesCard">
+                <h3 class="card-title">Enrolled Courses</h3>
+                <ul class="courses-list" id="enrolledCoursesList">
+                    <li>Loading...</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="profile-main">
+            <div class="profile-card">
+                <h3 class="card-title">Edit Profile</h3>
+                <form id="editProfileForm">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="editUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="editEmail" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Save Profile</button>
+                </form>
+            </div>
+
+            <div class="profile-card">
+                <h3 class="card-title">Change Password</h3>
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password" id="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" id="confirmNewPassword" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Change Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/profile.js"></script>
+</body>
+</html>
