@@ -1,0 +1,38 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: myeduconnect-db
+
+    restart: always
+
+    environment:
+      MYSQL_ROOT_PASSWORD: AAhx77@@
+      MYSQL_DATABASE: myeduconnect
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile   
+
+    container_name: myeduconnect-backend
+
+    restart: always
+
+    depends_on:
+      - mysql
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - ./backend/.env
+
+volumes:
+  mysql_data:
